@@ -4,7 +4,7 @@ import plotly.express as px
 
 st.set_page_config(layout="wide")
 st.sidebar.title("📊 Dashboard Menü")
-page = st.sidebar.radio("Bir sayfa seçin:", ["🌍 Dünya Haritası", "🔗 Association Kuralları"])
+page = st.sidebar.radio("Bir sayfa seçin:", ["🌍 World Map", "🔗 Association Kuralları"])
 
 # Page 1 
 if page == "🌍 World Map":
