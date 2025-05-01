@@ -31,10 +31,10 @@ if page == "🌍 Dünya Haritası":
         showcoastlines=False,
         projection_type="natural earth"
     )
- fig.update_layout(
+    fig.update_layout(
     paper_bgcolor='rgba(0,0,0,0)',   # Grafik alanı şeffaf
     geo_bgcolor='rgba(0,0,0,0)'      # Harita zemini şeffaf
-)
+    )
 
     st.plotly_chart(fig, use_container_width=True)
 
