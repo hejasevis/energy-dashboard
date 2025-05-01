@@ -1,5 +1,3 @@
-import streamlit as st
-import pandas as pd
 import plotly.express as px
 
 st.set_page_config(layout="wide")
@@ -16,33 +14,31 @@ if page == "🌍 World Map":
 
     year = st.slider("Select Year", int(df_map["year"].min()), int(df_map["year"].max()), 2023)
     df_year = df_map[df_map["year"] == year]
+    
+    custom_colors = ["#1A5319", "#508D4E", "#80AF81", "#D6EFD8"]
 
-    # Custom renk skalası
-custom_colors = ["#1A5319", "#508D4E", "#80AF81", "#D6EFD8"]
-
-fig = px.choropleth(
+    fig = px.choropleth(
     df_year,
     locations="iso_code",
     color="energy_per_capita",
     hover_name="country",
     color_continuous_scale=custom_colors,
     labels={"energy_per_capita": "kWh / person"},
-)
+    )
 
-fig.update_geos(
+    fig.update_geos(
     showframe=False,
     showcoastlines=False,
     projection_type="natural earth"
-)
+    )
 
-fig.update_layout(
+    fig.update_layout(
     margin=dict(l=0, r=0, t=40, b=0),
     paper_bgcolor='rgba(0,0,0,0)',
     geo_bgcolor='rgba(0,0,0,0)'
-)
+    )
 
-st.plotly_chart(fig, use_container_width=True)
-
+    st.plotly_chart(fig, use_container_width=True)
     
 # Sayfa 2: Association Rules
 elif page == "🔗 Association Kuralları":
