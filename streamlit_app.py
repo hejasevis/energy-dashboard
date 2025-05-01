@@ -9,7 +9,7 @@ page = st.sidebar.radio("Bir sayfa seçin:", ["🌍 World Map", "🔗 Associatio
 # Page 1 
 if page == "🌍 World Map":
     st.title("🌍 Global Energy Use")
-    st.markdown("Measured in kilowatt-hours per person.")
+    st.markdown("Measured in kilowatt-hours per person. Data source: [Our World in Data](https://ourworldindata.org/energy)")
 
     df = pd.read_csv("owid-energy-data.csv")
     df_map = df[["iso_code", "country", "year", "energy_per_capita"]].dropna()
@@ -22,7 +22,7 @@ if page == "🌍 World Map":
         locations="iso_code",
         color="energy_per_capita",
         hover_name="country",
-        color_continuous_scale=px.colors.sequential.Viridis,
+        color_continuous_scale=px.colors.sequential.Agsunset,  # 👈 burası değişti
         labels={"energy_per_capita": "kWh / person"},
     )
 
@@ -31,9 +31,11 @@ if page == "🌍 World Map":
         showcoastlines=False,
         projection_type="natural earth"
     )
+
     fig.update_layout(
-    paper_bgcolor='rgba(0,0,0,0)',   # graphics area transparent
-    geo_bgcolor='rgba(0,0,0,0)'      # Map background is transparent
+        margin=dict(l=0, r=0, t=40, b=0),
+        paper_bgcolor='rgba(0,0,0,0)',   # grafik alanı
+        geo_bgcolor='rgba(0,0,0,0)'      # harita alanı
     )
 
     st.plotly_chart(fig, use_container_width=True)
