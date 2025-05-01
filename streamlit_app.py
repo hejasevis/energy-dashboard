@@ -18,33 +18,33 @@ if page == "🌍 Dünya Haritası":
     df_year = df_map[df_map["year"] == year]
 
     fig = px.choropleth(
-    df_year,
-    locations="iso_code",
-    color="energy_per_capita",
-    hover_name="country",
-    color_continuous_scale=px.colors.sequential.Viridis,  # 💡 daha soft renk
-    labels={"energy_per_capita": "kWh / kişi"},
-)
+        df_year,
+        locations="iso_code",
+        color="energy_per_capita",
+        hover_name="country",
+        color_continuous_scale=px.colors.sequential.Viridis,
+        labels={"energy_per_capita": "kWh / kişi"},
+    )
 
-fig.update_geos(
-    showframe=False,
-    showcoastlines=False,
-    projection_type="natural earth"
-)
-fig.update_layout(
-    margin=dict(l=0, r=0, t=40, b=0),
-    title={
-        'text': f"{year} – Kişi Başı Enerji Tüketimi (kWh)",
-        'y':0.95,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'
-    },
-    paper_bgcolor="white",
-    geo_bgcolor="white"
-)
+    fig.update_geos(
+        showframe=False,
+        showcoastlines=False,
+        projection_type="natural earth"
+    )
+    fig.update_layout(
+        margin=dict(l=0, r=0, t=40, b=0),
+        title={
+            'text': f"{year} – Kişi Başı Enerji Tüketimi (kWh)",
+            'y': 0.95,
+            'x': 0.5,
+            'xanchor': 'center',
+            'yanchor': 'top'
+        },
+        paper_bgcolor="white",
+        geo_bgcolor="white"
+    )
 
-st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True)
 
 # Sayfa 2: Association Rules
 elif page == "🔗 Association Kuralları":
