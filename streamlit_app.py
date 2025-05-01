@@ -6,15 +6,15 @@ st.set_page_config(layout="wide")
 st.sidebar.title("📊 Dashboard Menü")
 page = st.sidebar.radio("Bir sayfa seçin:", ["🌍 Dünya Haritası", "🔗 Association Kuralları"])
 
-# Sayfa 1: Dünya Haritası (estetik versiyon) 
-if page == "🌍 Dünya Haritası":
-    st.title("🌍 Küresel Enerji Kullanımı (Kişi Başı)")
-    st.markdown("Veri: [Our World in Data](https://ourworldindata.org/energy) - kWh / kişi")
+# Page 1 
+if page == "🌍 World Map":
+    st.title("🌍 Global Energy Use")
+    st.markdown("Measured in kilowatt-hours per person.")
 
     df = pd.read_csv("owid-energy-data.csv")
     df_map = df[["iso_code", "country", "year", "energy_per_capita"]].dropna()
 
-    year = st.slider("Yıl Seç", int(df_map["year"].min()), int(df_map["year"].max()), 2023)
+    year = st.slider("Select Year", int(df_map["year"].min()), int(df_map["year"].max()), 2023)
     df_year = df_map[df_map["year"] == year]
 
     fig = px.choropleth(
@@ -23,7 +23,7 @@ if page == "🌍 Dünya Haritası":
         color="energy_per_capita",
         hover_name="country",
         color_continuous_scale=px.colors.sequential.Viridis,
-        labels={"energy_per_capita": "kWh / kişi"},
+        labels={"energy_per_capita": "kWh / person"},
     )
 
     fig.update_geos(
@@ -32,8 +32,8 @@ if page == "🌍 Dünya Haritası":
         projection_type="natural earth"
     )
     fig.update_layout(
-    paper_bgcolor='rgba(0,0,0,0)',   # Grafik alanı şeffaf
-    geo_bgcolor='rgba(0,0,0,0)'      # Harita zemini şeffaf
+    paper_bgcolor='rgba(0,0,0,0)',   # graphics area transparent
+    geo_bgcolor='rgba(0,0,0,0)'      # Map background is transparent
     )
 
     st.plotly_chart(fig, use_container_width=True)
