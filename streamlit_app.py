@@ -31,18 +31,10 @@ if page == "🌍 Dünya Haritası":
         showcoastlines=False,
         projection_type="natural earth"
     )
-    fig.update_layout(
-        margin=dict(l=0, r=0, t=40, b=0),
-        title={
-            'text': f"{year} – Kişi Başı Enerji Tüketimi (kWh)",
-            'y': 0.95,
-            'x': 0.5,
-            'xanchor': 'center',
-            'yanchor': 'top'
-        },
-        paper_bgcolor="white",
-        geo_bgcolor="white"
-    )
+ fig.update_layout(
+    paper_bgcolor='rgba(0,0,0,0)',   # Grafik alanı şeffaf
+    geo_bgcolor='rgba(0,0,0,0)'      # Harita zemini şeffaf
+)
 
     st.plotly_chart(fig, use_container_width=True)
 
