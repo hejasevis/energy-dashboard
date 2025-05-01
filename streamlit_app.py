@@ -6,24 +6,31 @@ st.set_page_config(layout="wide")
 st.sidebar.title("📊 Dashboard Menü")
 page = st.sidebar.radio("Bir sayfa seçin:", ["🌍 Dünya Haritası", "🔗 Association Kuralları"])
 
-# Sayfa 1: Dünya Haritası (estetik versiyon)
-if page == "🌍 Dünya Haritası":
-    st.title("🌍 Küresel Enerji Kullanımı (Kişi Başı)")
-    st.markdown("Veri: [Our World in Data](https://ourworldindata.org/energy) - kWh / kişi")
+# Page 1: Global Map with hover & mini trend
+if page == "🌍 World Map":
+    st.title("🌍 Global Per Capita Energy Consumption")
+    st.markdown("Source: [Our World in Data](https://ourworldindata.org/energy) – measured in kilowatt-hours (kWh) per person.")
 
+    # Load data
     df = pd.read_csv("owid-energy-data.csv")
-    df_map = df[["iso_code", "country", "year", "energy_per_capita"]].dropna()
+    df = df[["iso_code", "country", "year", "energy_per_capita"]].dropna()
 
-    year = st.slider("Yıl Seç", int(df_map["year"].min()), int(df_map["year"].max()), 2023)
-    df_year = df_map[df_map["year"] == year]
+    # Select year
+    year = st.slider("Select Year", int(df["year"].min()), int(df["year"].max()), 2023)
+    df_year = df[df["year"] == year]
 
+    # Choropleth map
     fig = px.choropleth(
         df_year,
         locations="iso_code",
         color="energy_per_capita",
         hover_name="country",
-        color_continuous_scale=px.colors.sequential.Viridis,
-        labels={"energy_per_capita": "kWh / kişi"},
+        hover_data={"energy_per_capita": True, "iso_code": False, "year": True},
+        color_continuous_scale=[
+            "#fff5eb", "#fee6ce", "#fdd0a2", "#fdae6b",
+            "#fd8d3c", "#f16913", "#d94801", "#a63603", "#7f2704"
+        ],
+        labels={"energy_per_capita": "kWh per person"}
     )
 
     fig.update_geos(
@@ -31,12 +38,44 @@ if page == "🌍 Dünya Haritası":
         showcoastlines=False,
         projection_type="natural earth"
     )
+
     fig.update_layout(
-    paper_bgcolor='rgba(0,0,0,0)',   # Grafik alanı şeffaf
-    geo_bgcolor='rgba(0,0,0,0)'      # Harita zemini şeffaf
+        margin=dict(l=0, r=0, t=50, b=0),
+        height=700,
+        coloraxis_colorbar=dict(
+            title="Energy use<br>(kWh/person)",
+            ticks="outside",
+            tickvals=[0, 1000, 3000, 10000, 30000, 100000],
+            ticktext=["0", "1k", "3k", "10k", "30k", "100k"]
+        ),
+        paper_bgcolor='rgba(0,0,0,0)',
+        geo_bgcolor='rgba(0,0,0,0)'
     )
 
+    # Display map
     st.plotly_chart(fig, use_container_width=True)
+
+    # Optional: mini line plot below
+    st.markdown("### 📈 Country Energy Trend")
+    selected_country = st.selectbox("Select a country to view historical trend", sorted(df["country"].unique()), index=0)
+    country_data = df[df["country"] == selected_country]
+
+    fig_line = px.line(
+        country_data,
+        x="year",
+        y="energy_per_capita",
+        labels={"year": "Year", "energy_per_capita": "kWh per person"},
+        title=f"{selected_country} – Per Capita Energy Consumption Over Time"
+    )
+
+    fig_line.update_layout(
+        height=300,
+        margin=dict(l=20, r=20, t=40, b=20),
+        paper_bgcolor='rgba(0,0,0,0)'
+    )
+
+    st.plotly_chart(fig_line, use_container_width=True)
+
 
 # Sayfa 2: Association Rules
 elif page == "🔗 Association Kuralları":
