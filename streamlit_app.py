@@ -11,18 +11,25 @@ if page == "🌍 World Map":
     st.title("🌍 Global Per Capita Energy Consumption")
     st.markdown("Source: [Our World in Data](https://ourworldindata.org/energy) – Measured in kilowatt-hours (kWh) per person.")
 
+    # Load dataset
     df = pd.read_csv("owid-energy-data.csv")
+
+    # Select and clean relevant data
     df_map = df[["iso_code", "country", "year", "energy_per_capita"]].dropna()
 
-    year = st.slider("Select Year", int(df_map["year"].min()), int(df_map["year"].max()), 2023)
+    # Year selection slider (dynamic)
+    year_min = int(df_map["year"].min())
+    year_max = int(df_map["year"].max())
+    year = st.slider("Select Year", year_min, year_max, year_max)
+
     df_year = df_map[df_map["year"] == year]
 
+    # Create the choropleth map
     fig = px.choropleth(
         df_year,
         locations="iso_code",
         color="energy_per_capita",
         hover_name="country",
-        hover_data={"energy_per_capita": True, "iso_code": False},
         color_continuous_scale=[
             "#fff5eb", "#fee6ce", "#fdd0a2", "#fdae6b",
             "#fd8d3c", "#f16913", "#d94801", "#a63603", "#7f2704"
@@ -30,6 +37,12 @@ if page == "🌍 World Map":
         labels={"energy_per_capita": "kWh per person"},
     )
 
+    # Optional: customize hover appearance
+    fig.update_traces(
+        hovertemplate="<b>%{hovertext}</b><br>Energy: %{z:,.0f} kWh<extra></extra>"
+    )
+
+    # Map and layout style
     fig.update_geos(
         showframe=False,
         showcoastlines=False,
@@ -49,7 +62,9 @@ if page == "🌍 World Map":
         geo_bgcolor='rgba(0,0,0,0)'
     )
 
+    # Show the map
     st.plotly_chart(fig, use_container_width=True)
+
 
 # Sayfa 2: Association Rules
 elif page == "🔗 Association Kuralları":
