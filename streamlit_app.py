@@ -6,15 +6,15 @@ st.set_page_config(layout="wide")
 st.sidebar.title("📊 Dashboard Menü")
 page = st.sidebar.radio("Bir sayfa seçin:", ["🌍 Dünya Haritası", "🔗 Association Kuralları"])
 
-# Page 1: Global Map (Professional Style - English UI)
-if page == "🌍 World Map":
-    st.title("🌍 Global Per Capita Energy Consumption")
-    st.markdown("Source: [Our World in Data](https://ourworldindata.org/energy) – Measured in kilowatt-hours (kWh) per person.")
+# Sayfa 1: Dünya Haritası (estetik versiyon) 
+if page == "🌍 Dünya Haritası":
+    st.title("🌍 Küresel Enerji Kullanımı (Kişi Başı)")
+    st.markdown("Veri: [Our World in Data](https://ourworldindata.org/energy) - kWh / kişi")
 
     df = pd.read_csv("owid-energy-data.csv")
     df_map = df[["iso_code", "country", "year", "energy_per_capita"]].dropna()
 
-    year = st.slider("Select Year", int(df_map["year"].min()), int(df_map["year"].max()), 2023)
+    year = st.slider("Yıl Seç", int(df_map["year"].min()), int(df_map["year"].max()), 2023)
     df_year = df_map[df_map["year"] == year]
 
     fig = px.choropleth(
@@ -22,11 +22,8 @@ if page == "🌍 World Map":
         locations="iso_code",
         color="energy_per_capita",
         hover_name="country",
-        color_continuous_scale=[
-            "#fff5eb", "#fee6ce", "#fdd0a2", "#fdae6b",
-            "#fd8d3c", "#f16913", "#d94801", "#a63603", "#7f2704"
-        ],
-        labels={"energy_per_capita": "kWh per person"},
+        color_continuous_scale=px.colors.sequential.Viridis,
+        labels={"energy_per_capita": "kWh / kişi"},
     )
 
     fig.update_geos(
@@ -34,24 +31,13 @@ if page == "🌍 World Map":
         showcoastlines=False,
         projection_type="natural earth"
     )
-
     fig.update_layout(
-        margin=dict(l=0, r=0, t=50, b=0),
-        height=700,
-        coloraxis_colorbar=dict(
-            title="Energy use<br>(kWh per person)",
-            ticks="outside",
-            tickvals=[0, 1000, 3000, 10000, 30000, 100000],
-            ticktext=["0", "1,000", "3,000", "10,000", "30,000", "100,000"]
-        ),
-        paper_bgcolor='rgba(0,0,0,0)',
-        geo_bgcolor='rgba(0,0,0,0)'
+    paper_bgcolor='rgba(0,0,0,0)',   # Grafik alanı şeffaf
+    geo_bgcolor='rgba(0,0,0,0)'      # Harita zemini şeffaf
     )
 
     st.plotly_chart(fig, use_container_width=True)
-
-
-
+    
 # Sayfa 2: Association Rules
 elif page == "🔗 Association Kuralları":
     st.title("Enerji Tüketimi İlişkilendirme Kuralları")
