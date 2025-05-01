@@ -17,28 +17,32 @@ if page == "🌍 World Map":
     year = st.slider("Select Year", int(df_map["year"].min()), int(df_map["year"].max()), 2023)
     df_year = df_map[df_map["year"] == year]
 
-    fig = px.choropleth(
-        df_year,
-        locations="iso_code",
-        color="energy_per_capita",
-        hover_name="country",
-        color_continuous_scale=px.colors.sequential.Agsunset,  # 👈 burası değişti
-        labels={"energy_per_capita": "kWh / person"},
-    )
+    # Custom renk skalası
+custom_colors = ["#1A5319", "#508D4E", "#80AF81", "#D6EFD8"]
 
-    fig.update_geos(
-        showframe=False,
-        showcoastlines=False,
-        projection_type="natural earth"
-    )
+fig = px.choropleth(
+    df_year,
+    locations="iso_code",
+    color="energy_per_capita",
+    hover_name="country",
+    color_continuous_scale=custom_colors,
+    labels={"energy_per_capita": "kWh / person"},
+)
 
-    fig.update_layout(
-        margin=dict(l=0, r=0, t=40, b=0),
-        paper_bgcolor='rgba(0,0,0,0)',   # grafik alanı
-        geo_bgcolor='rgba(0,0,0,0)'      # harita alanı
-    )
+fig.update_geos(
+    showframe=False,
+    showcoastlines=False,
+    projection_type="natural earth"
+)
 
-    st.plotly_chart(fig, use_container_width=True)
+fig.update_layout(
+    margin=dict(l=0, r=0, t=40, b=0),
+    paper_bgcolor='rgba(0,0,0,0)',
+    geo_bgcolor='rgba(0,0,0,0)'
+)
+
+st.plotly_chart(fig, use_container_width=True)
+
     
 # Sayfa 2: Association Rules
 elif page == "🔗 Association Kuralları":
