@@ -82,6 +82,49 @@ elif page == "🌐 Country-Level Deep Analysis":
         st.subheader("📋 Association Rules")
         st.dataframe(rules_sorted)
 
+       # 🌐 Page 2 - Country-Level Deep Analysis
+elif page == "🌐 Country-Level Deep Analysis":
+    st.title("🔗 Energy Consumption Association Analysis")
+
+    selected_countries = st.multiselect(
+        "Select Countries",
+        sorted(df["country"].dropna().unique()),
+        default=["Turkey", "Germany", "United States", "France"]
+    )
+
+    threshold = st.slider("Binary Threshold (0–1 scale)", 0.1, 0.9, 0.3)
+    min_support = st.slider("Minimum Support", 0.1, 1.0, 0.4)
+    min_lift = st.slider("Minimum Lift", 1.0, 5.0, 1.0)
+
+    year_range = st.slider("Select Year Range", 1965, 2022, (2000, 2022))
+
+    if st.button("Run Analysis"):
+        filtered_df = df[
+            (df["country"].isin(selected_countries)) &
+            (df["year"].between(year_range[0], year_range[1]))
+        ].copy()
+
+        energy_columns = [col for col in filtered_df.columns if 'consumption' in col and 'change' not in col]
+        filtered_df = filtered_df[["country", "year"] + energy_columns].dropna()
+
+        # Normalize
+        scaler = MinMaxScaler()
+        normalized = scaler.fit_transform(filtered_df[energy_columns])
+        norm_df = pd.DataFrame(normalized, columns=energy_columns)
+
+        # Binary
+        binary_df = (norm_df > threshold).astype(int)
+
+        # Apriori
+        frequent_itemsets = apriori(binary_df, min_support=min_support, use_colnames=True)
+        rules = association_rules(frequent_itemsets, metric="lift", min_threshold=min_lift)
+        rules_sorted = rules.sort_values(by=["lift", "confidence", "support"], ascending=False)
+
+        # 📋 1. Association Rules Table
+        st.subheader("📋 Association Rules")
+        st.markdown(f"📅 Showing rules for **{year_range[0]}–{year_range[1]}**")
+        st.dataframe(rules_sorted)
+
         # 🔥 2. Correlation Heatmap (Plotly)
         st.subheader("🔥 Correlation Heatmap")
         import plotly.figure_factory as ff
@@ -92,33 +135,31 @@ elif page == "🌐 Country-Level Deep Analysis":
         y = list(corr.index)
 
         fig_heatmap = ff.create_annotated_heatmap(
-        z=z,
-        x=x,
-        y=y,
-        annotation_text=[[f"{val:.2f}" for val in row] for row in z],
-        colorscale="YlGnBu",
-        showscale=True
+            z=z,
+            x=x,
+            y=y,
+            annotation_text=[[f"{val:.2f}" for val in row] for row in z],
+            colorscale="YlGnBu",
+            showscale=True
         )
 
         fig_heatmap.update_layout(
-        title=dict(
-        text="Correlation Between Energy Types",
-        y=1.0,  # Yüksekliğini ayarlıyoruz (0.0 = alt, 1.0 = en üst)
-        x=0.5,   # Ortalanması için
-        xanchor='center',
-        yanchor='top',
-        font=dict(size=16)
-        ),
-        font=dict(size=12),
-        margin=dict(l=60, r=60, t=80, b=60),  # Üst boşluğu da artır!
-        paper_bgcolor='rgba(0,0,0,0)',
-        xaxis=dict(tickangle=45, tickfont=dict(size=10)),
-        yaxis=dict(tickfont=dict(size=10))
+            title=dict(
+                text="Correlation Between Energy Types",
+                y=1.0,
+                x=0.5,
+                xanchor='center',
+                yanchor='top',
+                font=dict(size=16)
+            ),
+            font=dict(size=12),
+            margin=dict(l=60, r=60, t=80, b=60),
+            paper_bgcolor='rgba(0,0,0,0)',
+            xaxis=dict(tickangle=45, tickfont=dict(size=10)),
+            yaxis=dict(tickfont=dict(size=10))
         )
 
-
         st.plotly_chart(fig_heatmap, use_container_width=True)
-
 
         # 📊 3. Top 10 Rules by Support (Bar Chart)
         st.subheader("📊 Top 10 Rules by Support")
@@ -127,7 +168,6 @@ elif page == "🌐 Country-Level Deep Analysis":
             top_support = rules_sorted.nlargest(10, 'support')
             bar_data = top_support[['antecedents', 'consequents', 'support']].copy()
 
-            # Frozenset yazılarını temizle
             def format_set(s):
                 return ", ".join(sorted(list(s)))
 
@@ -140,7 +180,7 @@ elif page == "🌐 Country-Level Deep Analysis":
                 bar_data,
                 x='rule',
                 y='support',
-                title="Top Rules by Support",
+                title=f"Top Rules by Support ({year_range[0]}–{year_range[1]})",
                 text='support',
                 color='support',
                 color_continuous_scale='Blues'
@@ -160,4 +200,4 @@ elif page == "🌐 Country-Level Deep Analysis":
 
             st.plotly_chart(fig2, use_container_width=True)
         else:
-            st.warning("No rules to visualize. Try adjusting thresholds.")
+            st.warning("No rules to visualize. Try adjusting thresholds or year range.")
