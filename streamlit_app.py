@@ -56,7 +56,7 @@ elif page == "🌐 Country-Level Deep Analysis":
     min_support = st.slider("Minimum Support", 0.1, 1.0, 0.4)
     min_lift = st.slider("Minimum Lift", 1.0, 5.0, 1.0)
 
-    year_range = st.slider("Select Year Range", 1965, 2022, (2000, 2022))
+    year_range = st.slider("Select Year Range", 1965, 2023, (2000, 2022))
 
     if st.button("Run Analysis"):
         filtered_df = df[
