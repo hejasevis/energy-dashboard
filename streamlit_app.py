@@ -48,7 +48,7 @@ elif page == "🌐 Country-Level Deep Analysis":
         default=["Turkey", "Germany", "United States", "France"]
     )
 
-    threshold = st.slider("Binary Threshold (0–1 scale)", 0.1, 0.9, 0.3)
+    threshold = st.slider("Binary Threshold", 0.1, 0.9, 0.3)
     min_support = st.slider("Minimum Support", 0.1, 1.0, 0.4)
     min_lift = st.slider("Minimum Lift", 1.0, 5.0, 1.0)
 
@@ -63,19 +63,37 @@ elif page == "🌐 Country-Level Deep Analysis":
 
         # Normalize
         scaler = MinMaxScaler()
-        normalized_data = scaler.fit_transform(filtered_df[energy_columns])
-        normalized_df = pd.DataFrame(normalized_data, columns=energy_columns)
+        normalized = scaler.fit_transform(filtered_df[energy_columns])
+        norm_df = pd.DataFrame(normalized, columns=energy_columns)
 
-        # Binary conversion
-        binary_df = (normalized_df > threshold).astype(int)
+        # Binary
+        binary_df = (norm_df > threshold).astype(int)
 
-        # Apply Apriori
+        # Apriori
         frequent_itemsets = apriori(binary_df, min_support=min_support, use_colnames=True)
         rules = association_rules(frequent_itemsets, metric="lift", min_threshold=min_lift)
         rules_sorted = rules.sort_values(by=["lift", "confidence", "support"], ascending=False)
 
+        # 🎯 1. Kurallar Tablosu
+        st.subheader("📋 Association Rules")
+        st.dataframe(rules_sorted)
+
+        # 🎯 2. Korelasyon Heatmap
+        st.subheader("🔥 Correlation Heatmap")
+        corr_matrix = norm_df.corr()
+
+        fig, ax = plt.subplots(figsize=(10, 8))
+        sns.heatmap(corr_matrix, cmap="Greens", annot=True, fmt=".2f", ax=ax)
+        st.pyplot(fig)
+
+        # 🎯 3. Destek (support) değeri en yüksek 10 kuralın bar grafiği
+        st.subheader("📊 Top 10 Rules by Support")
         if not rules_sorted.empty:
-            st.success(f"{len(rules_sorted)} rules found.")
-            st.dataframe(rules_sorted)
+            top_support = rules_sorted.nlargest(10, 'support')
+            bar_data = top_support[['antecedents', 'consequents', 'support']].copy()
+            bar_data['rule'] = bar_data['antecedents'].astype(str) + ' → ' + bar_data['consequents'].astype(str)
+
+            fig2 = px.bar(bar_data, x='rule', y='support', title="Top Rules by Support")
+            st.plotly_chart(fig2, use_container_width=True)
         else:
-            st.warning("No rules found. Try adjusting the threshold, support, or country selection.")
+            st.warning("No rules to visualize.")
