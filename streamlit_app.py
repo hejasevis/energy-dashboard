@@ -52,9 +52,15 @@ elif page == "🌐 Country-Level Deep Analysis":
         default=["Turkey", "Germany", "United States", "France"]
     )
 
-    threshold = st.slider("Binary Threshold (0–1 scale)", 0.1, 0.9, 0.3)
-    min_support = st.slider("Minimum Support", 0.1, 1.0, 0.4)
-    min_lift = st.slider("Minimum Lift", 1.0, 5.0, 1.0)
+st.markdown('<span style="color:#1E90FF">🔵 Binary Threshold (0–1 scale)</span>', unsafe_allow_html=True)
+threshold = st.slider(" ", 0.1, 0.9, 0.3)
+
+st.markdown('<span style="color:#32CD32">🟢 Minimum Support</span>', unsafe_allow_html=True)
+min_support = st.slider("  ", 0.1, 1.0, 0.4)
+
+st.markdown('<span style="color:#DC143C">🔴 Minimum Lift</span>', unsafe_allow_html=True)
+min_lift = st.slider("   ", 1.0, 5.0, 1.0)
+
 
     if st.button("Run Analysis"):
         filtered_df = df[
