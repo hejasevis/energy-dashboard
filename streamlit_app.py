@@ -1,11 +1,13 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-from sklearn.preprocessing import MinMaxScaler
-from mlxtend.frequent_patterns import apriori, association_rules
 import matplotlib.pyplot as plt
 import seaborn as sns
+import plotly.figure_factory as ff
+from sklearn.preprocessing import MinMaxScaler
+from mlxtend.frequent_patterns import apriori, association_rules
 
+# Page setup
 st.set_page_config(layout="wide")
 st.sidebar.title("📊 Dashboard Menu")
 page = st.sidebar.radio("Select a page:", ["🌍 Global Map", "🌐 Country-Level Deep Analysis"])
@@ -17,7 +19,7 @@ def load_data():
 
 df = load_data()
 
-# Page 1 - World Map
+# 🌍 Page 1 - Global Map
 if page == "🌍 Global Map":
     st.title("🌍 Global Energy Consumption per Capita")
     st.markdown("Measured in kilowatt-hours per person. Source: [Our World in Data](https://ourworldindata.org/energy)")
@@ -40,7 +42,7 @@ if page == "🌍 Global Map":
 
     st.plotly_chart(fig, use_container_width=True)
 
-# Page 2 - Association Analysis
+# 🌐 Page 2 - Country-Level Deep Analysis
 elif page == "🌐 Country-Level Deep Analysis":
     st.title("🔗 Energy Consumption Association Analysis")
 
@@ -50,7 +52,7 @@ elif page == "🌐 Country-Level Deep Analysis":
         default=["Turkey", "Germany", "United States", "France"]
     )
 
-    threshold = st.slider("Binary Threshold", 0.1, 0.9, 0.3)
+    threshold = st.slider("Binary Threshold (0–1 scale)", 0.1, 0.9, 0.3)
     min_support = st.slider("Minimum Support", 0.1, 1.0, 0.4)
     min_lift = st.slider("Minimum Lift", 1.0, 5.0, 1.0)
 
@@ -63,32 +65,31 @@ elif page == "🌐 Country-Level Deep Analysis":
         energy_columns = [col for col in filtered_df.columns if 'consumption' in col and 'change' not in col]
         filtered_df = filtered_df[["country", "year"] + energy_columns].dropna()
 
-        # Normalize
+        # Normalize values
         scaler = MinMaxScaler()
         normalized = scaler.fit_transform(filtered_df[energy_columns])
         norm_df = pd.DataFrame(normalized, columns=energy_columns)
 
-        # Binary
+        # Convert to binary
         binary_df = (norm_df > threshold).astype(int)
 
-        # Apriori
+        # Run Apriori algorithm
         frequent_itemsets = apriori(binary_df, min_support=min_support, use_colnames=True)
         rules = association_rules(frequent_itemsets, metric="lift", min_threshold=min_lift)
         rules_sorted = rules.sort_values(by=["lift", "confidence", "support"], ascending=False)
 
-        # 🎯 1. Kurallar Tablosu
+        # 📋 Rules Table
         st.subheader("📋 Association Rules")
         st.dataframe(rules_sorted)
 
-        # 🎯 2. Korelasyon Heatmap
+        # 🔥 Correlation Heatmap (matplotlib + seaborn)
         st.subheader("🔥 Correlation Heatmap")
         corr_matrix = norm_df.corr()
-
         fig, ax = plt.subplots(figsize=(10, 8))
         sns.heatmap(corr_matrix, cmap="Greens", annot=True, fmt=".2f", ax=ax)
         st.pyplot(fig)
 
-        # 🎯 3. Destek (support) değeri en yüksek 10 kuralın bar grafiği
+        # 📊 Top 10 rules by support (bar chart)
         st.subheader("📊 Top 10 Rules by Support")
         if not rules_sorted.empty:
             top_support = rules_sorted.nlargest(10, 'support')
@@ -98,4 +99,4 @@ elif page == "🌐 Country-Level Deep Analysis":
             fig2 = px.bar(bar_data, x='rule', y='support', title="Top Rules by Support")
             st.plotly_chart(fig2, use_container_width=True)
         else:
-            st.warning("No rules to visualize.")
+            st.warning("No rules to visualize. Try adjusting thresholds.")
