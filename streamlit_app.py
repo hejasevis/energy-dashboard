@@ -82,29 +82,21 @@ elif page == "🌐 Country-Level Deep Analysis":
         st.subheader("📋 Association Rules")
         st.dataframe(rules_sorted)
 
-        # 🔥 Correlation Heatmap
+        # 🔥 Correlation Heatmap (matplotlib + seaborn)
         st.subheader("🔥 Correlation Heatmap")
         corr_matrix = norm_df.corr()
         fig, ax = plt.subplots(figsize=(10, 8))
         sns.heatmap(corr_matrix, cmap="Greens", annot=True, fmt=".2f", ax=ax)
         st.pyplot(fig)
 
-        # 📊 Top 10 Rules by Support
+        # 📊 Top 10 rules by support (bar chart)
         st.subheader("📊 Top 10 Rules by Support")
         if not rules_sorted.empty:
             top_support = rules_sorted.nlargest(10, 'support')
             bar_data = top_support[['antecedents', 'consequents', 'support']].copy()
-
-            def format_set(s):
-                return ", ".join(sorted(list(s)))
-
-            bar_data['rule'] = bar_data.apply(
-                lambda row: f"{format_set(row['antecedents'])} → {format_set(row['consequents'])}",
-                axis=1
-            )
+            bar_data['rule'] = bar_data['antecedents'].astype(str) + ' → ' + bar_data['consequents'].astype(str)
 
             fig2 = px.bar(bar_data, x='rule', y='support', title="Top Rules by Support")
-            fig2.update_layout(xaxis_tickangle=45)
             st.plotly_chart(fig2, use_container_width=True)
         else:
             st.warning("No rules to visualize. Try adjusting thresholds.")
