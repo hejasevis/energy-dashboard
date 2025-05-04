@@ -73,7 +73,7 @@ elif page == "🌍 Global Map":
 
     fig.update_layout(
         margin=dict(l=0, r=0, t=60, b=0),
-        height= 800,
+        height= 600,
         paper_bgcolor="#111111",
         plot_bgcolor="#1e1e1e",
         font=dict(color="white", size=12),
@@ -153,7 +153,7 @@ elif page == "🌐 Country-Level Deep Analysis":
                 font=dict(size=16)
             ),
             font=dict(size=12),
-            height=800,
+            height=600,
             margin=dict(l=60, r=60, t=80, b=60),
             paper_bgcolor='rgba(0,0,0,0)',
             xaxis=dict(tickangle=45, tickfont=dict(size=10)),
@@ -194,7 +194,7 @@ elif page == "🌐 Country-Level Deep Analysis":
                 yaxis_title="Support",
                 title_font_size=20,
                 font=dict(size=12),
-                height=800,  # Yüksekliği artır
+                height=600,
                 margin=dict(l=60, r=60, t=60, b=200),  # ← bu doğru olan
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
