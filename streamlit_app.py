@@ -83,32 +83,35 @@ elif page == "🌐 Country-Level Deep Analysis":
         st.subheader("📋 Association Rules")
         st.dataframe(rules_sorted)
 
-        # 🔥 2. Correlation Heatmap (Plotly)
-        st.subheader("🔥 Correlation Heatmap")
-        import plotly.figure_factory as ff
+# 🔥 2. Correlation Heatmap (Plotly)
+st.subheader("🔥 Correlation Heatmap")
+import plotly.figure_factory as ff
 
-        corr = norm_df.corr()
-        z = corr.values
-        x = list(corr.columns)
-        y = list(corr.index)
+corr = norm_df.corr()
+z = corr.values
+x = list(corr.columns)
+y = list(corr.index)
 
-        fig_heatmap = ff.create_annotated_heatmap(
-            z=z,
-            x=x,
-            y=y,
-            annotation_text=[[f"{val:.2f}" for val in row] for row in z],
-            colorscale="YlGnBu",
-            showscale=True
-        )
+fig_heatmap = ff.create_annotated_heatmap(
+    z=z,
+    x=x,
+    y=y,
+    annotation_text=[[f"{val:.2f}" for val in row] for row in z],
+    colorscale="YlGnBu",
+    showscale=True
+)
 
-        fig_heatmap.update_layout(
-            title="Correlation Between Energy Types",
-            font=dict(size=12),
-            margin=dict(l=60, r=60, t=50, b=60),
-            paper_bgcolor='rgba(0,0,0,0)'
-        )
+fig_heatmap.update_layout(
+    title="Correlation Between Energy Types",
+    font=dict(size=12),
+    margin=dict(l=60, r=60, t=50, b=60),
+    paper_bgcolor='rgba(0,0,0,0)',
+    xaxis=dict(tickangle=45, tickfont=dict(size=10)),
+    yaxis=dict(tickfont=dict(size=10))
+)
 
-        st.plotly_chart(fig_heatmap, use_container_width=True)
+st.plotly_chart(fig_heatmap, use_container_width=True)
+
 
         # 📊 3. Top 10 Rules by Support (Bar Chart)
         st.subheader("📊 Top 10 Rules by Support")
