@@ -56,46 +56,6 @@ elif page == "🌐 Country-Level Deep Analysis":
     min_support = st.slider("Minimum Support", 0.1, 1.0, 0.4)
     min_lift = st.slider("Minimum Lift", 1.0, 5.0, 1.0)
 
-    if st.button("Run Analysis"):
-        filtered_df = df[
-            (df["country"].isin(selected_countries)) &
-            (df["year"].between(1965, 2022))
-        ].copy()
-
-        energy_columns = [col for col in filtered_df.columns if 'consumption' in col and 'change' not in col]
-        filtered_df = filtered_df[["country", "year"] + energy_columns].dropna()
-
-        # Normalize
-        scaler = MinMaxScaler()
-        normalized = scaler.fit_transform(filtered_df[energy_columns])
-        norm_df = pd.DataFrame(normalized, columns=energy_columns)
-
-        # Binary
-        binary_df = (norm_df > threshold).astype(int)
-
-        # Apriori
-        frequent_itemsets = apriori(binary_df, min_support=min_support, use_colnames=True)
-        rules = association_rules(frequent_itemsets, metric="lift", min_threshold=min_lift)
-        rules_sorted = rules.sort_values(by=["lift", "confidence", "support"], ascending=False)
-
-        # 📋 1. Association Rules Table
-        st.subheader("📋 Association Rules")
-        st.dataframe(rules_sorted)
-
-       # 🌐 Page 2 - Country-Level Deep Analysis
-elif page == "🌐 Country-Level Deep Analysis":
-    st.title("🔗 Energy Consumption Association Analysis")
-
-    selected_countries = st.multiselect(
-        "Select Countries",
-        sorted(df["country"].dropna().unique()),
-        default=["Turkey", "Germany", "United States", "France"]
-    )
-
-    threshold = st.slider("Binary Threshold (0–1 scale)", 0.1, 0.9, 0.3)
-    min_support = st.slider("Minimum Support", 0.1, 1.0, 0.4)
-    min_lift = st.slider("Minimum Lift", 1.0, 5.0, 1.0)
-
     year_range = st.slider("Select Year Range", 1965, 2022, (2000, 2022))
 
     if st.button("Run Analysis"):
