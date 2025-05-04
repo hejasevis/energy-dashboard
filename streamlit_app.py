@@ -81,15 +81,51 @@ elif page == "🌐 Country-Level Deep Analysis":
         st.subheader("📋 Association Rules")
         st.dataframe(rules_sorted)
 
-        # 🔥 2. Correlation Heatmap (Plotly)
-        st.subheader("🔥 Correlation Heatmap")
-        import plotly.figure_factory as ff
+elif page == "🌐 Country-Level Deep Analysis":
+    st.title("🔗 Energy Consumption Association Analysis")
 
+    selected_countries = st.multiselect(
+        "Select Countries",
+        sorted(df["country"].dropna().unique()),
+        default=["Turkey", "Germany", "United States", "France"]
+    )
+
+    threshold = st.slider("Binary Threshold (0–1 scale)", 0.1, 0.9, 0.3)
+    min_support = st.slider("Minimum Support", 0.1, 1.0, 0.4)
+    min_lift = st.slider("Minimum Lift", 1.0, 5.0, 1.0)
+
+    if st.button("Run Analysis"):
+        filtered_df = df[
+            (df["country"].isin(selected_countries)) &
+            (df["year"].between(1965, 2022))
+        ].copy()
+
+        energy_columns = [col for col in filtered_df.columns if 'consumption' in col and 'change' not in col]
+        filtered_df = filtered_df[["country", "year"] + energy_columns].dropna()
+
+        # Normalize
+        scaler = MinMaxScaler()
+        normalized = scaler.fit_transform(filtered_df[energy_columns])
+        norm_df = pd.DataFrame(normalized, columns=energy_columns)
+
+        # Binary
+        binary_df = (norm_df > threshold).astype(int)
+
+        # Apriori
+        frequent_itemsets = apriori(binary_df, min_support=min_support, use_colnames=True)
+        rules = association_rules(frequent_itemsets, metric="lift", min_threshold=min_lift)
+        rules_sorted = rules.sort_values(by=["lift", "confidence", "support"], ascending=False)
+
+        # 📋 1. Association Rules Table
+        st.subheader("📋 Association Rules")
+        st.dataframe(rules_sorted)
+
+        # 🔥 2. Improved Plotly Heatmap
+        import plotly.figure_factory as ff
         corr = norm_df.corr()
         z = corr.values
         x = list(corr.columns)
         y = list(corr.index)
-
         fig_heatmap = ff.create_annotated_heatmap(
             z=z,
             x=x,
@@ -98,24 +134,21 @@ elif page == "🌐 Country-Level Deep Analysis":
             colorscale="YlGnBu",
             showscale=True
         )
-
         fig_heatmap.update_layout(
             title="Correlation Between Energy Types",
             font=dict(size=12),
-            margin=dict(l=60, r=60, t=50, b=60),
-            paper_bgcolor='rgba(0,0,0,0)'
+            margin=dict(l=80, r=80, t=80, b=80),
+            paper_bgcolor='rgba(0,0,0,0)',
+            xaxis=dict(tickangle=-45)
         )
-
         st.plotly_chart(fig_heatmap, use_container_width=True)
 
         # 📊 3. Top 10 Rules by Support (Bar Chart)
         st.subheader("📊 Top 10 Rules by Support")
-
         if not rules_sorted.empty:
             top_support = rules_sorted.nlargest(10, 'support')
             bar_data = top_support[['antecedents', 'consequents', 'support']].copy()
 
-            # Frozenset yazılarını temizle
             def format_set(s):
                 return ", ".join(sorted(list(s)))
 
@@ -133,7 +166,6 @@ elif page == "🌐 Country-Level Deep Analysis":
                 color='support',
                 color_continuous_scale='Blues'
             )
-
             fig2.update_traces(texttemplate='%{text:.2f}', textposition='outside')
             fig2.update_layout(
                 xaxis_tickangle=30,
@@ -145,8 +177,74 @@ elif page == "🌐 Country-Level Deep Analysis":
                 paper_bgcolor='rgba(0,0,0,0)',
                 margin=dict(t=60)
             )
-
             st.plotly_chart(fig2, use_container_width=True)
         else:
-            st.warning("No rules to visualize. Try adjusting thresholds.")
+            st.warning("No rules to visualize.")
+
+        # 🧠 4. Network Graph (Optional but visual!)
+        import networkx as nx
+        import plotly.graph_objects as go
+
+        if not rules_sorted.empty:
+            st.subheader("🕸 Network Graph of Associations")
+
+            G = nx.DiGraph()
+            for _, row in rules_sorted.head(10).iterrows():
+                for a in row['antecedents']:
+                    for c in row['consequents']:
+                        G.add_edge(a, c, weight=row['lift'])
+
+            pos = nx.spring_layout(G, seed=42)
+            edge_x = []
+            edge_y = []
+
+            for edge in G.edges():
+                x0, y0 = pos[edge[0]]
+                x1, y1 = pos[edge[1]]
+                edge_x += [x0, x1, None]
+                edge_y += [y0, y1, None]
+
+            edge_trace = go.Scatter(
+                x=edge_x, y=edge_y,
+                line=dict(width=1, color='#888'),
+                hoverinfo='none',
+                mode='lines'
+            )
+
+            node_x = []
+            node_y = []
+            node_text = []
+
+            for node in G.nodes():
+                x, y = pos[node]
+                node_x.append(x)
+                node_y.append(y)
+                node_text.append(node)
+
+            node_trace = go.Scatter(
+                x=node_x, y=node_y,
+                mode='markers+text',
+                hoverinfo='text',
+                text=node_text,
+                textposition="bottom center",
+                marker=dict(
+                    showscale=False,
+                    color='#00cc96',
+                    size=20,
+                    line_width=2
+                )
+            )
+
+            fig3 = go.Figure(data=[edge_trace, node_trace])
+            fig3.update_layout(
+                title='Network of Frequent Energy Associations',
+                showlegend=False,
+                hovermode='closest',
+                margin=dict(t=40, b=40, l=20, r=20),
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+            )
+
+            st.plotly_chart(fig3, use_container_width=True)
+
 
