@@ -121,18 +121,12 @@ elif page == "🌐 Country-Level Deep Analysis":
         st.subheader("📋 Association Rules")
         st.dataframe(rules_sorted)
 
-        # 🔥 Correlation Heatmap (matplotlib version, axis cleanup)
+        # 🔥 Correlation Heatmap (WORKING CLEAN)
         st.subheader("🔥 Correlation Heatmap")
         corr_matrix = norm_df.corr()
         fig, ax = plt.subplots(figsize=(12, 10))
-        heatmap = sns.heatmap(
-            corr_matrix,
-            cmap="YlGnBu",
-            annot=True,
-            fmt=".2f",
-            ax=ax,
-            annot_kws={"size": 8}
-        )
+        sns.heatmap(corr_matrix, cmap="YlGnBu", annot=True, fmt=".2f", ax=ax,
+                    cbar=True, linewidths=0.5, annot_kws={"size": 8})
         ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right", fontsize=9)
         ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=9)
         st.pyplot(fig)
@@ -155,7 +149,6 @@ elif page == "🌐 Country-Level Deep Analysis":
                 bar_data,
                 x='rule',
                 y='support',
-                title="Top Rules by Support",
                 text='support',
                 color='support',
                 color_continuous_scale='Blues'
@@ -166,10 +159,9 @@ elif page == "🌐 Country-Level Deep Analysis":
                 xaxis_title="Rule",
                 yaxis_title="Support",
                 font=dict(size=12),
-                plot_bgcolor='rgba(0,0,0,0)',
-                paper_bgcolor='rgba(0,0,0,0)',
-                margin=dict(t=60)
+                margin=dict(t=50, b=150)
             )
             st.plotly_chart(fig2, use_container_width=True)
         else:
             st.warning("No rules to visualize. Try adjusting thresholds.")
+
