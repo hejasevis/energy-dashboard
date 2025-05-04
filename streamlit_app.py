@@ -52,6 +52,7 @@ elif page == "🌐 Country-Level Deep Analysis":
         default=["Turkey", "Germany", "United States", "France"]
     )
 
+    st.markdown('<span style="color:#1E90FF">🔵 Binary Threshold (0–1 scale)</span>', unsafe_allow_html=True)
     threshold = st.slider("Binary Threshold (0–1 scale)", 0.1, 0.9, 0.3)
     min_support = st.slider("Minimum Support", 0.1, 1.0, 0.4)
     min_lift = st.slider("Minimum Lift", 1.0, 5.0, 1.0)
