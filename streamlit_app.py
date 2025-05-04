@@ -60,7 +60,7 @@ elif page == "🌍 Global Map":
         locations="iso_code",
         color="energy_per_capita",
         hover_name="country",
-        color_continuous_scale=["#1A5319", "#508D4E", "#80AF81", "#D6EFD8"],
+        color_continuous_scale=["#333d29", "#414833", "#656d4a", "#a4ac86", "#c2c5aa","#b6ad90", "#a68a64", "#936639", "#7f4f24", "#582f0e"],
         labels={"energy_per_capita": "kWh / person"},
         title=f"Per Capita Energy Consumption ({year})"
     )
