@@ -81,6 +81,7 @@ elif page == "🌐 Country-Level Deep Analysis":
         st.subheader("📋 Association Rules")
         st.dataframe(rules_sorted)
 
+# 🌐 Page 2 - Country-Level Deep Analysis
 elif page == "🌐 Country-Level Deep Analysis":
     st.title("🔗 Energy Consumption Association Analysis")
 
@@ -103,47 +104,40 @@ elif page == "🌐 Country-Level Deep Analysis":
         energy_columns = [col for col in filtered_df.columns if 'consumption' in col and 'change' not in col]
         filtered_df = filtered_df[["country", "year"] + energy_columns].dropna()
 
-        # Normalize
+        # Normalize values
         scaler = MinMaxScaler()
         normalized = scaler.fit_transform(filtered_df[energy_columns])
         norm_df = pd.DataFrame(normalized, columns=energy_columns)
 
-        # Binary
+        # Convert to binary
         binary_df = (norm_df > threshold).astype(int)
 
-        # Apriori
+        # Run Apriori algorithm
         frequent_itemsets = apriori(binary_df, min_support=min_support, use_colnames=True)
         rules = association_rules(frequent_itemsets, metric="lift", min_threshold=min_lift)
         rules_sorted = rules.sort_values(by=["lift", "confidence", "support"], ascending=False)
 
-        # 📋 1. Association Rules Table
+        # 📋 Rules Table
         st.subheader("📋 Association Rules")
         st.dataframe(rules_sorted)
 
-        # 🔥 2. Improved Plotly Heatmap
-        import plotly.figure_factory as ff
-        corr = norm_df.corr()
-        z = corr.values
-        x = list(corr.columns)
-        y = list(corr.index)
-        fig_heatmap = ff.create_annotated_heatmap(
-            z=z,
-            x=x,
-            y=y,
-            annotation_text=[[f"{val:.2f}" for val in row] for row in z],
-            colorscale="YlGnBu",
-            showscale=True
+        # 🔥 Correlation Heatmap (matplotlib version, axis cleanup)
+        st.subheader("🔥 Correlation Heatmap")
+        corr_matrix = norm_df.corr()
+        fig, ax = plt.subplots(figsize=(12, 10))
+        heatmap = sns.heatmap(
+            corr_matrix,
+            cmap="YlGnBu",
+            annot=True,
+            fmt=".2f",
+            ax=ax,
+            annot_kws={"size": 8}
         )
-        fig_heatmap.update_layout(
-            title="Correlation Between Energy Types",
-            font=dict(size=12),
-            margin=dict(l=80, r=80, t=80, b=80),
-            paper_bgcolor='rgba(0,0,0,0)',
-            xaxis=dict(tickangle=-45)
-        )
-        st.plotly_chart(fig_heatmap, use_container_width=True)
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right", fontsize=9)
+        ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=9)
+        st.pyplot(fig)
 
-        # 📊 3. Top 10 Rules by Support (Bar Chart)
+        # 📊 Top 10 Rules by Support
         st.subheader("📊 Top 10 Rules by Support")
         if not rules_sorted.empty:
             top_support = rules_sorted.nlargest(10, 'support')
@@ -171,7 +165,6 @@ elif page == "🌐 Country-Level Deep Analysis":
                 xaxis_tickangle=30,
                 xaxis_title="Rule",
                 yaxis_title="Support",
-                title_font_size=20,
                 font=dict(size=12),
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
@@ -179,4 +172,4 @@ elif page == "🌐 Country-Level Deep Analysis":
             )
             st.plotly_chart(fig2, use_container_width=True)
         else:
-            st.warning("No rules to visualize.")
+            st.warning("No rules to visualize. Try adjusting thresholds.")
