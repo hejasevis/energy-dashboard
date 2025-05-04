@@ -113,6 +113,7 @@ elif page == "🌐 Country-Level Deep Analysis":
                 font=dict(size=16)
             ),
             font=dict(size=12),
+            height=600,
             margin=dict(l=60, r=60, t=80, b=60),
             paper_bgcolor='rgba(0,0,0,0)',
             xaxis=dict(tickangle=45, tickfont=dict(size=10)),
