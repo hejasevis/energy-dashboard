@@ -20,7 +20,7 @@ def load_data():
 df = load_data()
 
 # 🌍 Page 1 - Global Map
-    if page == "🌍 Global Map":
+if page == "🌍 Global Map":
     st.title("🌍 Global Energy Consumption per Capita")
     st.markdown("Measured in kilowatt-hours per person. Source: [Our World in Data](https://ourworldindata.org/energy)")
 
