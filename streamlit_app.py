@@ -36,10 +36,6 @@ if page == "🌍 Global Map":
 
     st.markdown(f"#### 📄 Details for {selected_country} ({year})")
     st.markdown(f"- 📊 Energy per Capita: **{selected_row['energy_per_capita']:.2f} kWh/person**")
-    st.markdown(f"- 💪 Primary Energy Consumption: **{selected_row['primary_energy_consumption']:.2f} TWh**")
-    st.markdown(f"- 🌫️ Fossil Energy Consumption: **{selected_row['fossil_energy_consumption']:.2f} TWh**")
-    st.markdown(f"- 🌿 Renewable Energy Consumption: **{selected_row['renewables_consumption']:.2f} TWh**")
-    st.markdown(f"- ♻️ Low-carbon Energy Consumption: **{selected_row['low_carbon_energy_consumption']:.2f} TWh**")
     st.markdown(f"- 📆 Year: **{selected_row['year']}**")
     st.markdown("---")
     st.markdown(f"Currently showing energy use for the year **{year}**")
