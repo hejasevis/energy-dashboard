@@ -101,13 +101,21 @@ elif page == "🌐 Country-Level Deep Analysis":
         )
 
         fig_heatmap.update_layout(
-        title="Correlation Between Energy Types",
+        title=dict(
+        text="Correlation Between Energy Types",
+        y=0.95,  # Yüksekliğini ayarlıyoruz (0.0 = alt, 1.0 = en üst)
+        x=0.5,   # Ortalanması için
+        xanchor='center',
+        yanchor='top',
+        font=dict(size=16)
+        ),
         font=dict(size=12),
-        margin=dict(l=60, r=60, t=50, b=60),
+        margin=dict(l=60, r=60, t=80, b=60),  # Üst boşluğu da artır!
         paper_bgcolor='rgba(0,0,0,0)',
         xaxis=dict(tickangle=45, tickfont=dict(size=10)),
         yaxis=dict(tickfont=dict(size=10))
         )
+
 
         st.plotly_chart(fig_heatmap, use_container_width=True)
 
