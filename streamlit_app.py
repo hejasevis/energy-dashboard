@@ -3,6 +3,8 @@ import pandas as pd
 import plotly.express as px
 from sklearn.preprocessing import MinMaxScaler
 from mlxtend.frequent_patterns import apriori, association_rules
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 st.set_page_config(layout="wide")
 st.sidebar.title("📊 Dashboard Menu")
