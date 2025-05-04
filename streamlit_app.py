@@ -42,7 +42,6 @@ if page == "🌍 Global Map":
     st.markdown(f"- ♻️ Low-carbon Energy Consumption: **{selected_row['low_carbon_energy_consumption']:.2f} TWh**")
     st.markdown(f"- 📆 Year: **{selected_row['year']}**")
     st.markdown("---")
-
     st.markdown(f"Currently showing energy use for the year **{year}**")
 
     fig = px.choropleth(
