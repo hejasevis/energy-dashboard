@@ -154,10 +154,9 @@ elif page == "🌐 Country-Level Deep Analysis":
                 title_font_size=20,
                 font=dict(size=12),
                 height=600,  # Yüksekliği artır
-                margin=dict(l=60, r=60, t=60, b=200),  # Alt boşluğu büyüt
+                margin=dict(l=60, r=60, t=60, b=200),  # ← bu doğru olan
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
-                margin=dict(t=60)
             )
 
             st.plotly_chart(fig2, use_container_width=True)
