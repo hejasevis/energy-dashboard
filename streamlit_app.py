@@ -103,7 +103,7 @@ elif page == "🌐 Country-Level Deep Analysis":
         fig_heatmap.update_layout(
         title=dict(
         text="Correlation Between Energy Types",
-        y=1.5,  # Yüksekliğini ayarlıyoruz (0.0 = alt, 1.0 = en üst)
+        y=1.0,  # Yüksekliğini ayarlıyoruz (0.0 = alt, 1.0 = en üst)
         x=0.5,   # Ortalanması için
         xanchor='center',
         yanchor='top',
