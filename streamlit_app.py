@@ -91,12 +91,10 @@ elif page == "🌐 Country-Level Deep Analysis":
         
 # 📊 Top 10 rules by support (bar chart)
 st.subheader("📊 Top 10 Rules by Support")
-
 if not rules_sorted.empty:
     top_support = rules_sorted.nlargest(10, 'support')
     bar_data = top_support[['antecedents', 'consequents', 'support']].copy()
 
-    # Clean frozenset display
     def format_set(s):
         return ", ".join(sorted(list(s)))
 
@@ -106,8 +104,9 @@ if not rules_sorted.empty:
     )
 
     fig2 = px.bar(bar_data, x='rule', y='support', title="Top Rules by Support")
-    fig2.update_layout(xaxis_tickangle=45)
+    fig2.update_layout(xaxis_tickangle=45)  # Daha düzgün açıyla yazı
     st.plotly_chart(fig2, use_container_width=True)
 else:
     st.warning("No rules to visualize. Try adjusting thresholds.")
+
 
