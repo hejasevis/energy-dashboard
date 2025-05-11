@@ -11,6 +11,9 @@ from PIL import Image
 import streamlit as st
 from prophet import Prophet
 from prophet.plot import plot_plotly
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+import numpy as np
+
 
 
 # Page setup
@@ -337,9 +340,9 @@ elif page == "🗺 Country vs Energy Type":
     with st.expander("🔍 See Full Share Breakdown"):
         for _, row in avg_df.iterrows():
             st.markdown(f"- `{row['Energy Source'].replace('_consumption', '').title()}`: **{row['Percentage']}%**")
+            
 
-
-    # 🔮 Energy Consumption Forecast
+# 🔮 Energy Consumption Forecast
 elif page == "🔮 Energy Consumption Forecast":
     st.title("🔮 Forecasting Energy Consumption")
     st.markdown("Predict future consumption for a selected country and energy source using time series modeling (Prophet).")
@@ -396,7 +399,24 @@ elif page == "🔮 Energy Consumption Forecast":
         forecast_display.columns = ["Year", "Prediction", "Lower Bound", "Upper Bound"]
         forecast_display["Year"] = forecast_display["Year"].dt.year
         st.dataframe(forecast_display)
-        
+
+        # 🔍 MODEL PERFORMANS METRİKLERİ (Geçmiş verideki doğruluk)
+        from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+        import numpy as np
+
+        actual_vs_pred = pd.merge(country_data, forecast[["ds", "yhat"]], on="ds")
+
+        mae = mean_absolute_error(actual_vs_pred["y"], actual_vs_pred["yhat"])
+        rmse = mean_squared_error(actual_vs_pred["y"], actual_vs_pred["yhat"], squared=False)
+        r2 = r2_score(actual_vs_pred["y"], actual_vs_pred["yhat"])
+        mape = np.mean(np.abs((actual_vs_pred["y"] - actual_vs_pred["yhat"]) / actual_vs_pred["y"])) * 100
+
+        st.markdown("### 🧪 Model Accuracy (on known data)")
+        st.markdown(f"- **MAE (Mean Absolute Error):** {mae:,.2f}")
+        st.markdown(f"- **RMSE (Root Mean Squared Error):** {rmse:,.2f}")
+        st.markdown(f"- **R² Score:** {r2:.3f}")
+        st.markdown(f"- **MAPE (Mean Absolute Percentage Error):** {mape:.2f}%")
+
         # Yorum
         st.markdown("### ⚡Insights")
 
@@ -423,3 +443,4 @@ elif page == "🔮 Energy Consumption Forecast":
         """)
 
         st.caption("📘 This summary is generated based on model outputs.")
+
