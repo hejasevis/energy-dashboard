@@ -16,8 +16,8 @@ from streamlit_option_menu import option_menu
 
 with st.sidebar:
     page = option_menu(
-        menu_title="📊 Dashboard Menu",
-        options=["🏠 Home", "🌍 Global Map", "🌐 Deep Analysis", "📈 Growth Rates", "⚖️ Country vs Energy Type"],
+        menu_title="Menu",
+        options=["Home", "Global Map", "Deep Analysis", "Growth Rates", "Country vs Energy Type"],
         icons=["house", "globe", "graph-up", "bar-chart", "diagram-3"],
         default_index=0
     )
