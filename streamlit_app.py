@@ -25,7 +25,7 @@ with st.sidebar:
     page = option_menu(
         menu_title="Dashboard Menu",
         options=["🏠 Home", "🌍 Global Map", "🌐 Deep Analysis", "📈 Growth Rates", "⚖️ Country vs Energy Type","🔮 Energy Consumption Forecast"],
-        icons=[""] * 5,
+        icons=[""] * 6,
         default_index=0,
         styles={
             "icon": {"display": "none"}
