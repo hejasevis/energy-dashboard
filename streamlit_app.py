@@ -42,8 +42,8 @@ if page == "🏠 Home":
         """
         <style>
         .block-container {
-            padding-top: -1rem;
-            padding-bottom: -1rem;
+            padding-top: 4px;
+            padding-bottom: 4px;
         }
         </style>
         """,
