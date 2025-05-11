@@ -16,15 +16,10 @@ from prophet.plot import plot_plotly
 # Page setup
 st.set_page_config(layout="wide")
 from streamlit_option_menu import option_menu
-
-from streamlit_option_menu import option_menu
-
-from streamlit_option_menu import option_menu
-
 with st.sidebar:
     page = option_menu(
         menu_title="Dashboard Menu",
-        options=["🏠 Home", "🌍 Global Map", "🌐 Deep Analysis", "📈 Growth Rates", "⚖️ Country vs Energy Type","🔮 Energy Consumption Forecast"],
+        options=["🏠 Home", "🌍 Global Map", "🌐 Deep Analysis", "📈 Growth Rates", "🗺 Country vs Energy Type","🔮 Energy Consumption Forecast"],
         icons=[""] * 6,
         default_index=0,
         styles={
@@ -50,7 +45,7 @@ if page == "🏠 Home":
     st.markdown("### 📊 Features:")
     st.markdown("- 🌍 **Global Map**: Explore per capita energy consumption by country and year.")
     st.markdown("- 🌐 **Country-Level Analysis**: Discover hidden associations between different energy types with support, confidence, and lift metrics.")
-    st.markdown("- 🔥 **Heatmaps & Rules**: Visualize energy consumption correlations and strongest association rules.")
+    st.markdown("- ⚡ **Heatmaps & Rules**: Visualize energy consumption correlations and strongest association rules.")
 
     st.markdown("### 📝 How to Use:")
     st.markdown("Select a page from the sidebar to start exploring the data.")
@@ -149,8 +144,8 @@ elif page == "🌐 Deep Analysis":
         st.markdown(f"📅 Showing rules for **{year_range[0]}–{year_range[1]}**")
         st.dataframe(rules_sorted)
 
-        # 🔥 2. Correlation Heatmap (Plotly)
-        st.subheader("🔥 Correlation Heatmap")
+        # ⚡ 2. Correlation Heatmap (Plotly)
+        st.subheader("⚡ Correlation Heatmap")
         import plotly.figure_factory as ff
 
         corr = norm_df.corr()
@@ -219,7 +214,7 @@ elif page == "🌐 Deep Analysis":
                 title_font_size=20,
                 font=dict(size=12),
                 height=600,
-                margin=dict(l=60, r=60, t=60, b=200),  # ← bu doğru olan
+                margin=dict(l=60, r=60, t=60, b=200),
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
             )
@@ -280,9 +275,9 @@ elif page == "📈 Growth Rates":
     st.plotly_chart(fig, use_container_width=True)
 
     
-    # ⚖️ Country vs Energy Type"
-elif page == "⚖️ Country vs Energy Type":
-    st.title("⚖️ Country-Specific Energy Source Breakdown")
+    # 🗺 Country vs Energy Type
+elif page == "🗺 Country vs Energy Type":
+    st.title("🗺 Country-Specific Energy Source Breakdown")
     st.markdown("Compare energy source consumption breakdown for a selected country by year or year range.")
 
     # Enerji kolonları
@@ -323,7 +318,7 @@ elif page == "⚖️ Country vs Energy Type":
     fig_pie.update_layout(template="plotly_white")
     st.plotly_chart(fig_pie, use_container_width=True)
 
-    # 📊 Bar Chart – SONRA
+    # 📊 Bar Chart
     st.markdown("### 📊 Average Energy Consumption (Bar Chart)")
     fig_bar = px.bar(
         avg_df,
@@ -342,8 +337,8 @@ elif page == "⚖️ Country vs Energy Type":
     )
     fig_bar.update_traces(texttemplate='%{text:.2s}', textposition='outside')
     st.plotly_chart(fig_bar, use_container_width=True)
-        # 📋 Otomatik Yorumlama
-    st.markdown("### 🧠 Automatic Insights")
+    # 📋 Yorum
+    st.markdown("### ⚡Insights")
 
     total = avg_df["Average Consumption"].sum()
     avg_df["Percentage"] = (avg_df["Average Consumption"] / total * 100).round(2)
@@ -421,8 +416,8 @@ elif page == "🔮 Energy Consumption Forecast":
         forecast_display["Year"] = forecast_display["Year"].dt.year
         st.dataframe(forecast_display)
         
-        # 🧠 Yorum
-        st.markdown("### 🧠 Forecast Interpretation")
+        # Yorum
+        st.markdown("### ⚡Insights")
 
         # Yıl bazlı fark hesapla
         future_diff = forecast_display["Prediction"].diff().dropna()
@@ -446,11 +441,4 @@ elif page == "🔮 Energy Consumption Forecast":
         - The average uncertainty in prediction is around **±{avg_uncertainty:,.0f} kWh**, which indicates {"high" if avg_uncertainty > first_val * 0.3 else "reasonable"} model confidence.
         """)
 
-        st.caption("📘 This summary is generated automatically based on Prophet model outputs.")
-
-
-
-
-
-
-
+        st.caption("📘 This summary is generated based on model outputs.")
