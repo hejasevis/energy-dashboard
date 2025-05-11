@@ -175,7 +175,6 @@ elif page == "📈 Growth Rates":
         """)
     else:
         st.info("Not enough data to interpret growth trends.")
-        ... (önceki sayfalar değişmeden) ...
 
         
         # 🌐 Deep Analysis
