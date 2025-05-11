@@ -212,23 +212,22 @@ elif page == "🌐 Country-Level Deep Analysis":
             st.warning("No rules to visualize. Try adjusting thresholds or year range.")
            
 
-    # 📈 4. Energy Growth Rates
-    if page == "📈 Energy Growth Rates":
+# 📈 Energy Growth Rates 
+elif page == "📈 Energy Growth Rates":
     st.title("📈 Energy Source Growth Analysis")
     st.markdown("Visualize **annual growth/change rates** of various energy sources for the World or selected countries.")
 
     # 📊 Veriyi yükle
-    df = pd.read_csv("owid-energy-data.csv")
     energy_cols = [col for col in df.columns if col.endswith("_consumption")]
-    df = df[["country", "year"] + energy_cols].dropna()
+    df_clean = df[["country", "year"] + energy_cols].dropna()
 
     # 🌍 Ülke seçimi
-    countries = sorted(df["country"].unique())
+    countries = sorted(df_clean["country"].unique())
     countries.insert(0, "World")
     selected_country = st.selectbox("Select Country (or World):", countries)
 
     # 📆 Yıl aralığı seçimi
-    country_df = df[df["country"] == selected_country]
+    country_df = df_clean[df_clean["country"] == selected_country]
     min_year = int(country_df["year"].min())
     max_year = int(country_df["year"].max())
     year_range = st.slider("Select Year Range:", min_year, max_year, (2010, 2022))
@@ -262,4 +261,5 @@ elif page == "🌐 Country-Level Deep Analysis":
     )
 
     st.plotly_chart(fig, use_container_width=True)
+
 
