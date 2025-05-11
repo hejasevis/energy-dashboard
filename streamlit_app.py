@@ -400,23 +400,32 @@ elif page == "🔮 Energy Consumption Forecast":
         forecast_display["Year"] = forecast_display["Year"].dt.year
         st.dataframe(forecast_display)
         
-        # 🔍 MODEL PERFORMANS METRİKLERİ (Geçmiş verideki doğruluk)
+        # MODEL PERFORMANS METRİKLERİ
 
+        # Gerçek ve tahmin verilerini birleştir
         actual_vs_pred = pd.merge(country_data, forecast[["ds", "yhat"]], on="ds")
 
-        # NaN içeren satırları kaldır (önemli!)
+        # NaN'leri temizle
         actual_vs_pred = actual_vs_pred.dropna()
 
-        mae = mean_absolute_error(actual_vs_pred["y"], actual_vs_pred["yhat"])
-        rmse = mean_squared_error(actual_vs_pred["y"], actual_vs_pred["yhat"], squared=False)
-        r2 = r2_score(actual_vs_pred["y"], actual_vs_pred["yhat"])
-        mape = np.mean(np.abs((actual_vs_pred["y"] - actual_vs_pred["yhat"]) / actual_vs_pred["y"])) * 100
+        # Gerçekten sayı mı ve boş değil mi kontrol et
+        if not actual_vs_pred.empty and "y" in actual_vs_pred.columns and "yhat" in actual_vs_pred.columns:
+        y_true = actual_vs_pred["y"].astype(float).to_numpy()
+        y_pred = actual_vs_pred["yhat"].astype(float).to_numpy()
 
-        st.markdown("### 🧪 Model Accuracy (on known data)")
-        st.markdown(f"- **MAE (Mean Absolute Error):** {mae:,.2f}")
-        st.markdown(f"- **RMSE (Root Mean Squared Error):** {rmse:,.2f}")
-        st.markdown(f"- **R² Score:** {r2:.3f}")
-        st.markdown(f"- **MAPE (Mean Absolute Percentage Error):** {mape:.2f}%")
+       mae = mean_absolute_error(y_true, y_pred)
+       rmse = mean_squared_error(y_true, y_pred, squared=False)
+       r2 = r2_score(y_true, y_pred)
+       mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
+
+      st.markdown("### 🧪 Model Accuracy (on known data)")
+      st.markdown(f"- **MAE (Mean Absolute Error):** {mae:,.2f}")
+      st.markdown(f"- **RMSE (Root Mean Squared Error):** {rmse:,.2f}")
+      st.markdown(f"- **R² Score:** {r2:.3f}")
+      st.markdown(f"- **MAPE (Mean Absolute Percentage Error):** {mape:.2f}%")
+      else:
+      st.warning("⚠️ Not enough valid data for error metric calculation.")
+
 
 
         # Yorum
