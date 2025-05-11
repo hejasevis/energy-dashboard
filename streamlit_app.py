@@ -318,26 +318,6 @@ elif page == "🗺 Country vs Energy Type":
     fig_pie.update_layout(template="plotly_white")
     st.plotly_chart(fig_pie, use_container_width=True)
 
-    """ 📊 Bar Chart
-    st.markdown("### 📊 Average Energy Consumption (Bar Chart)")
-    fig_bar = px.bar(
-        avg_df,
-        x="Energy Source",
-        y="Average Consumption",
-        text="Average Consumption",
-        title=f"{selected_country} – Average Consumption ({year_range[0]}–{year_range[1]})",
-        labels={"Average Consumption": "kWh"},
-        color="Average Consumption",
-        color_continuous_scale="Tealgrn"
-    )
-    fig_bar.update_layout(
-        xaxis_tickangle=30,
-        height=600,
-        template="plotly_white"
-    )
-    fig_bar.update_traces(texttemplate='%{text:.2s}', textposition='outside')
-    st.plotly_chart(fig_bar, use_container_width=True) 
-    """
     # 📋 Yorum
     st.markdown("### ⚡Insights")
 
