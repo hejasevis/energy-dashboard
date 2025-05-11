@@ -104,7 +104,7 @@ elif page == "🌍 Global Map":
     st.plotly_chart(fig, use_container_width=True)
     
     # 🌐 Page 2 - Country-Level Deep Analysis
-elif page == "🌐 Country-Level Deep Analysis":
+elif page == "🌐 Deep Analysis":
     st.title("🔗 Energy Consumption Association Analysis")
 
     selected_countries = st.multiselect(
@@ -227,7 +227,7 @@ elif page == "🌐 Country-Level Deep Analysis":
            
 
 # 📈 Energy Growth Rates 
-elif page == "📈 Energy Growth Rates":
+elif page == "📈 Growth Rates":
     st.title("📈 Energy Source Growth Analysis")
     st.markdown("Visualize **annual growth/change rates** of various energy sources for the World or selected countries.")
 
