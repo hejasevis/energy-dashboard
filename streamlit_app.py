@@ -14,12 +14,14 @@ import streamlit as st
 st.set_page_config(layout="wide")
 from streamlit_option_menu import option_menu
 
-page = option_menu(
-    menu_title="📊 Dashboard Menu",
-    options=["🏠 Home", "🌍 Global Map", "🌐 Deep Analysis", "📈 Growth Rates", "⚖️ Country vs Energy Type"],
-    icons=["", "", "", "", ""],  # ikonları boş geç
-    default_index=0
-)
+with st.sidebar:
+    page = option_menu(
+     menu_title="📊 Dashboard Menu",
+     options=["🏠 Home", "🌍 Global Map", "🌐 Deep Analysis", "📈 Growth Rates", "⚖️ Country vs Energy Type"],
+     icons=["", "", "", "", ""],  # ikonları boş geç
+     default_index=0
+    )
+
 
 # Load dataset
 @st.cache_data
