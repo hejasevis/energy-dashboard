@@ -23,14 +23,6 @@ df = load_data()
 
  # 🏠 Home Page
 if page == "🏠 Home":
-    st.markdown("""
-    <style>
-    .block-container {
-        padding-top: 1rem;
-        padding-bottom: 1rem;
-    }
-    </style>
-    """, unsafe_allow_html=True)
 
     st.image("images/2.svg", width=900)
 
