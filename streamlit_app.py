@@ -325,6 +325,26 @@ elif page == "⚖️ Country vs Energy Type":
     )
     fig_bar.update_traces(texttemplate='%{text:.2s}', textposition='outside')
     st.plotly_chart(fig_bar, use_container_width=True)
+        # 📋 Otomatik Yorumlama
+    st.markdown("### 🧠 Automatic Insights")
+
+    total = avg_df["Average Consumption"].sum()
+    avg_df["Percentage"] = (avg_df["Average Consumption"] / total * 100).round(2)
+
+    top_row = avg_df.iloc[0]
+    bottom_row = avg_df.iloc[-1]
+
+    st.markdown(f"""
+    - **Most used energy source:** `{top_row['Energy Source'].replace('_consumption', '').title()}` with **{top_row['Percentage']}%**
+    - **Least used energy source:** `{bottom_row['Energy Source'].replace('_consumption', '').title()}` with **{bottom_row['Percentage']}%**
+    - Total consumption (for selected sources and years): **{total:,.0f} kWh**
+    """)
+
+    # 👀 Detaylı oranlar listesi
+    with st.expander("🔍 See Full Share Breakdown"):
+        for _, row in avg_df.iterrows():
+            st.markdown(f"- `{row['Energy Source'].replace('_consumption', '').title()}`: **{row['Percentage']}%**")
+
 
 
 
