@@ -6,6 +6,8 @@ import seaborn as sns
 import plotly.figure_factory as ff
 from sklearn.preprocessing import MinMaxScaler
 from mlxtend.frequent_patterns import apriori, association_rules
+from PIL import Image
+import streamlit as st
 
 # Page setup
 st.set_page_config(layout="wide")
@@ -22,6 +24,7 @@ df = load_data()
 # 🏠 Home Page
 if page == "🏠 Home":
     st.title("🔌 Global Energy Dashboard")
+    st.image("images/1.svg", use_column_width=True)
     st.markdown("This interactive dashboard visualizes global energy consumption data from [Our World in Data](https://ourworldindata.org/energy).")
 
     st.markdown("### 📊 Features:")
