@@ -12,8 +12,16 @@ import streamlit as st
 
 # Page setup
 st.set_page_config(layout="wide")
-st.sidebar.title("📊 Dashboard Menu")
-page = st.sidebar.radio("Select a page:", ["🏠 Home", "🌍 Global Map", "🌐 Country-Level Deep Analysis", "📈 Energy Growth Rates", "⚖️ Country vs Energy Type"])
+from streamlit_option_menu import option_menu
+
+with st.sidebar:
+    page = option_menu(
+        menu_title="📊 Dashboard Menu",
+        options=["🏠 Home", "🌍 Global Map", "🌐 Deep Analysis", "📈 Growth Rates", "⚖️ Country vs Energy Type"],
+        icons=["house", "globe", "graph-up", "bar-chart", "diagram-3"],
+        default_index=0
+    )
+
 
 # Load dataset
 @st.cache_data
