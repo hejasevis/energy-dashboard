@@ -7,3 +7,5 @@ matplotlib
 seaborn
 networkx
 streamlit-option-menu
+prophet
+Pillow
