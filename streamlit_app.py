@@ -38,7 +38,6 @@ df = load_data()
 
  # 🏠 Home Page
 if page == "🏠 Home":
-
     st.markdown(
         """
         <style>
@@ -51,7 +50,7 @@ if page == "🏠 Home":
         unsafe_allow_html=True
     )
 
-    st.image("images/3.png", width=900)
+    st.image("images/3.png", unsafe_allow_html=True)
 
 
 
