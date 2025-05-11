@@ -296,7 +296,7 @@ elif page == "⚖️ Country vs Energy Type":
     
     #Pie chart
     st.markdown("🧩 Show Pie Chart"):
-        fig_pie = px.pie(
+    fig_pie = px.pie(
             avg_df,
             names="Energy Source",
             values="Average Consumption",
