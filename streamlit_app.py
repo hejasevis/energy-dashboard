@@ -18,7 +18,8 @@ with st.sidebar:
     page = option_menu(
      menu_title="📊 Dashboard Menu",
      options=["🏠 Home", "🌍 Global Map", "🌐 Deep Analysis", "📈 Growth Rates", "⚖️ Country vs Energy Type"],
-     default_index=10,
+     icons=[],  # ikonları boş geç
+     default_index=0
     )
 
 
