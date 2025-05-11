@@ -14,28 +14,22 @@ st.set_page_config(layout="wide")
 st.sidebar.title("📊 Dashboard Menu")
 page = st.sidebar.radio("Select a page:", ["🏠 Home", "🌍 Global Map", "🌐 Country-Level Deep Analysis"])
 
-# Load dataset
-@st.cache_data
-def load_data():
-    return pd.read_csv("owid-energy-data.csv")
+ # 🏠 Home Page
+if page == "🏠 Home":
+    st.image("images/1.png", use_column_width=True)
+    st.title("🔌 Global Energy Dashboard")
+    st.markdown("This interactive dashboard visualizes global energy consumption data from [Our World in Data](https://ourworldindata.org/energy).")
 
-df = load_data()
+    st.markdown("### 📊 Features:")
+    st.markdown("- 🌍 **Global Map**: Explore per capita energy consumption by country and year.")
+    st.markdown("- 🌐 **Country-Level Analysis**: Discover hidden associations between different energy types with support, confidence, and lift metrics.")
+    st.markdown("- 🔥 **Heatmaps & Rules**: Visualize energy consumption correlations and strongest association rules.")
 
-st.markdown(
-    """
-    <style>
-    .small-margin {
-        margin-top: -50px;
-        margin-bottom: -30px;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+    st.markdown("### 📝 How to Use:")
+    st.markdown("Select a page from the sidebar to start exploring the data.")
 
-st.markdown('<div class="small-margin">', unsafe_allow_html=True)
-st.image("images/1.svg", use_container_width=True)
-st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown("---")
+    st.info("This dashboard is developed as part of a Bachelor's Graduation Project in Computer Engineering.")
 
 
 # 🌍 Page 1 - Global Map
