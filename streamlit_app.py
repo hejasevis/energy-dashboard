@@ -39,7 +39,17 @@ df = load_data()
  # 🏠 Home Page
 if page == "🏠 Home":
 
-    st.image("images/3.png", use_container_width=True)
+    st.markdown("""
+    <style>
+    .custom-image {
+        margin-top: -50px;
+        margin-bottom: -30px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown('<img src="images/3.png" class="custom-image" width="1000">', unsafe_allow_html=True)
+
 
     st.title("🔌 Global Energy Dashboard")
     st.markdown("This interactive dashboard visualizes global energy consumption data from [Our World in Data](https://ourworldindata.org/energy).")
