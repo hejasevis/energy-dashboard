@@ -318,7 +318,7 @@ elif page == "🗺 Country vs Energy Type":
     fig_pie.update_layout(template="plotly_white")
     st.plotly_chart(fig_pie, use_container_width=True)
 
-    # 📊 Bar Chart
+    """ 📊 Bar Chart
     st.markdown("### 📊 Average Energy Consumption (Bar Chart)")
     fig_bar = px.bar(
         avg_df,
@@ -336,7 +336,8 @@ elif page == "🗺 Country vs Energy Type":
         template="plotly_white"
     )
     fig_bar.update_traces(texttemplate='%{text:.2s}', textposition='outside')
-    st.plotly_chart(fig_bar, use_container_width=True)
+    st.plotly_chart(fig_bar, use_container_width=True) 
+    """
     # 📋 Yorum
     st.markdown("### ⚡Insights")
 
@@ -350,7 +351,7 @@ elif page == "🗺 Country vs Energy Type":
     - **Most used energy source:** `{top_row['Energy Source'].replace('_consumption', '').title()}` with **{top_row['Percentage']}%**
     - **Least used energy source:** `{bottom_row['Energy Source'].replace('_consumption', '').title()}` with **{bottom_row['Percentage']}%**
     - Total consumption (for selected sources and years): **{total:,.0f} kWh**
-    """)
+    """)  
 
     # 👀 Detaylı oranlar listesi
     with st.expander("🔍 See Full Share Breakdown"):
