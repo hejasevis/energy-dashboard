@@ -50,7 +50,7 @@ if page == "🏠 Home":
         unsafe_allow_html=True
     )
 
-    st.image("images/3.png", use_container_width=True)
+    st.image("images/2.png", use_container_width=True)
 
 
 
