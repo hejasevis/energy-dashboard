@@ -42,13 +42,18 @@ if page == "🏠 Home":
     st.markdown("""
     <style>
     .custom-image {
-        margin-top: -50px;
-        margin-bottom: -30px;
+        display: block;
+        margin: -40px auto -20px auto;
+        width: 80%;
+        max-width: 900px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        border-radius: 12px;
     }
     </style>
     """, unsafe_allow_html=True)
 
-    st.markdown('<img src="images/3.png" class="custom-image" width="1000">', unsafe_allow_html=True)
+    st.markdown('<img src="images/3.png" class="custom-image">', unsafe_allow_html=True)
+
 
 
     st.title("🔌 Global Energy Dashboard")
