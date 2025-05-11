@@ -399,23 +399,25 @@ elif page == "🔮 Energy Consumption Forecast":
         forecast_display.columns = ["Year", "Prediction", "Lower Bound", "Upper Bound"]
         forecast_display["Year"] = forecast_display["Year"].dt.year
         st.dataframe(forecast_display)
-
+        
         # 🔍 MODEL PERFORMANS METRİKLERİ (Geçmiş verideki doğruluk)
-        from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-        import numpy as np
 
-        actual_vs_pred = pd.merge(country_data, forecast[["ds", "yhat"]], on="ds")
+actual_vs_pred = pd.merge(country_data, forecast[["ds", "yhat"]], on="ds")
 
-        mae = mean_absolute_error(actual_vs_pred["y"], actual_vs_pred["yhat"])
-        rmse = mean_squared_error(actual_vs_pred["y"], actual_vs_pred["yhat"], squared=False)
-        r2 = r2_score(actual_vs_pred["y"], actual_vs_pred["yhat"])
-        mape = np.mean(np.abs((actual_vs_pred["y"] - actual_vs_pred["yhat"]) / actual_vs_pred["y"])) * 100
+# NaN içeren satırları kaldır (önemli!)
+actual_vs_pred = actual_vs_pred.dropna()
 
-        st.markdown("### 🧪 Model Accuracy (on known data)")
-        st.markdown(f"- **MAE (Mean Absolute Error):** {mae:,.2f}")
-        st.markdown(f"- **RMSE (Root Mean Squared Error):** {rmse:,.2f}")
-        st.markdown(f"- **R² Score:** {r2:.3f}")
-        st.markdown(f"- **MAPE (Mean Absolute Percentage Error):** {mape:.2f}%")
+mae = mean_absolute_error(actual_vs_pred["y"], actual_vs_pred["yhat"])
+rmse = mean_squared_error(actual_vs_pred["y"], actual_vs_pred["yhat"], squared=False)
+r2 = r2_score(actual_vs_pred["y"], actual_vs_pred["yhat"])
+mape = np.mean(np.abs((actual_vs_pred["y"] - actual_vs_pred["yhat"]) / actual_vs_pred["y"])) * 100
+
+st.markdown("### 🧪 Model Accuracy (on known data)")
+st.markdown(f"- **MAE (Mean Absolute Error):** {mae:,.2f}")
+st.markdown(f"- **RMSE (Root Mean Squared Error):** {rmse:,.2f}")
+st.markdown(f"- **R² Score:** {r2:.3f}")
+st.markdown(f"- **MAPE (Mean Absolute Percentage Error):** {mape:.2f}%")
+
 
         # Yorum
         st.markdown("### ⚡Insights")
