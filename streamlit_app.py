@@ -4,6 +4,7 @@ import plotly.express as px
 import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.figure_factory as ff
+import plotly.graph_objects as go
 from sklearn.preprocessing import MinMaxScaler
 from mlxtend.frequent_patterns import apriori, association_rules
 from PIL import Image
@@ -12,7 +13,7 @@ import streamlit as st
 # Page setup
 st.set_page_config(layout="wide")
 st.sidebar.title("📊 Dashboard Menu")
-page = st.sidebar.radio("Select a page:", ["🏠 Home", "🌍 Global Map", "🌐 Country-Level Deep Analysis"])
+page = st.sidebar.radio("Select a page:", ["🏠 Home", "🌍 Global Map", "🌐 Country-Level Deep Analysis", "📈 Energy Growth Rates"])
 
 # Load dataset
 @st.cache_data
@@ -209,3 +210,56 @@ elif page == "🌐 Country-Level Deep Analysis":
             st.plotly_chart(fig2, use_container_width=True)
         else:
             st.warning("No rules to visualize. Try adjusting thresholds or year range.")
+           
+
+    # 📈 4. Energy Growth Rates
+    if page == "📈 Energy Growth Rates":
+    st.title("📈 Energy Source Growth Analysis")
+    st.markdown("Visualize **annual growth/change rates** of various energy sources for the World or selected countries.")
+
+    # 📊 Veriyi yükle
+    df = pd.read_csv("owid-energy-data.csv")
+    energy_cols = [col for col in df.columns if col.endswith("_consumption")]
+    df = df[["country", "year"] + energy_cols].dropna()
+
+    # 🌍 Ülke seçimi
+    countries = sorted(df["country"].unique())
+    countries.insert(0, "World")
+    selected_country = st.selectbox("Select Country (or World):", countries)
+
+    # 📆 Yıl aralığı seçimi
+    country_df = df[df["country"] == selected_country]
+    min_year = int(country_df["year"].min())
+    max_year = int(country_df["year"].max())
+    year_range = st.slider("Select Year Range:", min_year, max_year, (2010, 2022))
+    filtered_df = country_df[(country_df["year"] >= year_range[0]) & (country_df["year"] <= year_range[1])].copy()
+
+    # 🔢 Yıllık % değişim oranı hesapla
+    for col in energy_cols:
+        filtered_df[col + "_change_%"] = filtered_df[col].pct_change() * 100
+
+    # ⚡ Enerji türü seçimi
+    selected_sources = st.multiselect("Select Energy Sources:", energy_cols, default=energy_cols[:3])
+
+    # 📈 Plotly grafiği oluştur
+    st.markdown("### 📊 Annual Growth Rates by Source")
+    fig = go.Figure()
+
+    for col in selected_sources:
+        fig.add_trace(go.Scatter(
+            x=filtered_df["year"],
+            y=filtered_df[col + "_change_%"],
+            mode='lines+markers',
+            name=col.replace("_consumption", "").title()
+        ))
+
+    fig.update_layout(
+        title=f"{selected_country} – Annual Energy Consumption Growth Rates",
+        xaxis_title="Year",
+        yaxis_title="Change Rate (%)",
+        template="plotly_white",
+        hovermode="x unified"
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
