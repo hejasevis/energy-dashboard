@@ -402,21 +402,21 @@ elif page == "🔮 Energy Consumption Forecast":
         
         # 🔍 MODEL PERFORMANS METRİKLERİ (Geçmiş verideki doğruluk)
 
-actual_vs_pred = pd.merge(country_data, forecast[["ds", "yhat"]], on="ds")
+        actual_vs_pred = pd.merge(country_data, forecast[["ds", "yhat"]], on="ds")
 
-# NaN içeren satırları kaldır (önemli!)
-actual_vs_pred = actual_vs_pred.dropna()
+        # NaN içeren satırları kaldır (önemli!)
+        actual_vs_pred = actual_vs_pred.dropna()
 
-mae = mean_absolute_error(actual_vs_pred["y"], actual_vs_pred["yhat"])
-rmse = mean_squared_error(actual_vs_pred["y"], actual_vs_pred["yhat"], squared=False)
-r2 = r2_score(actual_vs_pred["y"], actual_vs_pred["yhat"])
-mape = np.mean(np.abs((actual_vs_pred["y"] - actual_vs_pred["yhat"]) / actual_vs_pred["y"])) * 100
+        mae = mean_absolute_error(actual_vs_pred["y"], actual_vs_pred["yhat"])
+        rmse = mean_squared_error(actual_vs_pred["y"], actual_vs_pred["yhat"], squared=False)
+        r2 = r2_score(actual_vs_pred["y"], actual_vs_pred["yhat"])
+        mape = np.mean(np.abs((actual_vs_pred["y"] - actual_vs_pred["yhat"]) / actual_vs_pred["y"])) * 100
 
-st.markdown("### 🧪 Model Accuracy (on known data)")
-st.markdown(f"- **MAE (Mean Absolute Error):** {mae:,.2f}")
-st.markdown(f"- **RMSE (Root Mean Squared Error):** {rmse:,.2f}")
-st.markdown(f"- **R² Score:** {r2:.3f}")
-st.markdown(f"- **MAPE (Mean Absolute Percentage Error):** {mape:.2f}%")
+        st.markdown("### 🧪 Model Accuracy (on known data)")
+        st.markdown(f"- **MAE (Mean Absolute Error):** {mae:,.2f}")
+        st.markdown(f"- **RMSE (Root Mean Squared Error):** {rmse:,.2f}")
+        st.markdown(f"- **R² Score:** {r2:.3f}")
+        st.markdown(f"- **MAPE (Mean Absolute Percentage Error):** {mape:.2f}%")
 
 
         # Yorum
