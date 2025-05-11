@@ -420,6 +420,34 @@ elif page == "🔮 Energy Consumption Forecast":
         forecast_display.columns = ["Year", "Prediction", "Lower Bound", "Upper Bound"]
         forecast_display["Year"] = forecast_display["Year"].dt.year
         st.dataframe(forecast_display)
+        
+        # 🧠 Yorum
+        st.markdown("### 🧠 Forecast Interpretation")
+
+        # Yıl bazlı fark hesapla
+        future_diff = forecast_display["Prediction"].diff().dropna()
+        avg_growth = future_diff.mean()
+        trend = "increasing" if avg_growth > 0 else "decreasing"
+        direction_arrow = "📈" if avg_growth > 0 else "📉"
+
+        # Ortalama büyüme yüzdesi
+        first_val = forecast_display["Prediction"].iloc[0]
+        last_val = forecast_display["Prediction"].iloc[-1]
+        growth_percent = ((last_val - first_val) / first_val) * 100 if first_val != 0 else 0
+
+        # Güven aralığı yorumu
+        forecast_display["uncertainty"] = forecast_display["Upper Bound"] - forecast_display["Lower Bound"]
+        avg_uncertainty = forecast_display["uncertainty"].mean()
+
+        st.markdown(f"""
+        - {direction_arrow} **The predicted trend is {trend}.**
+        - The average yearly change is approximately **{avg_growth:,.0f} kWh**.
+        - From {forecast_display['Year'].iloc[0]} to {forecast_display['Year'].iloc[-1]}, the predicted consumption changes by **{growth_percent:.2f}%**.
+        - The average uncertainty in prediction is around **±{avg_uncertainty:,.0f} kWh**, which indicates {"high" if avg_uncertainty > first_val * 0.3 else "reasonable"} model confidence.
+        """)
+
+        st.caption("📘 This summary is generated automatically based on Prophet model outputs.")
+
 
 
 
