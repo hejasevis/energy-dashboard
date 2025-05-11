@@ -276,39 +276,38 @@ elif page == "⚖️ Country vs Energy Type":
     country_list = sorted(df_energy["country"].unique())
     selected_country = st.selectbox("Select a Country:", country_list)
 
-    # Yıl aralığı
+    # Yıl aralığı seçimi
     min_year = int(df_energy["year"].min())
     max_year = int(df_energy["year"].max())
     year_range = st.slider("Select Year Range:", min_year, max_year, (2020, 2022))
 
-    # Filtreleme
+    # Filtrelenmiş veri
     country_data = df_energy[(df_energy["country"] == selected_country) & 
                              (df_energy["year"] >= year_range[0]) & 
                              (df_energy["year"] <= year_range[1])]
 
-    # Enerji türleri seçimi
+    # Enerji türü seçimi
     selected_energy = st.multiselect("Select Energy Sources to Compare:", energy_cols, default=energy_cols[:5])
 
-    # Ortalama tüketim hesaplama
+    # Ortalama tüketim hesapla
     avg_data = country_data[selected_energy].mean().sort_values(ascending=False)
     avg_df = avg_data.reset_index()
     avg_df.columns = ["Energy Source", "Average Consumption"]
-    
-    #Pie chart
-    st.markdown("🧩 Show Pie Chart"):
+
+    # 🥧 Pie Chart – ÖNCE
+    st.markdown("### 🥧 Energy Type Share (Pie Chart)")
     fig_pie = px.pie(
-            avg_df,
-            names="Energy Source",
-            values="Average Consumption",
-            title=f"{selected_country} – Energy Type Share ({year_range[0]}–{year_range[1]})",
-            hole=0.3
-        )
-        fig_pie.update_layout(template="plotly_white")
-        st.plotly_chart(fig_pie, use_container_width=True)
+        avg_df,
+        names="Energy Source",
+        values="Average Consumption",
+        title=f"{selected_country} – Energy Type Share ({year_range[0]}–{year_range[1]})",
+        hole=0.3
+    )
+    fig_pie.update_layout(template="plotly_white")
+    st.plotly_chart(fig_pie, use_container_width=True)
 
-
-    # Bar chart
-    st.markdown("### 📊 Average Energy Consumption")
+    # 📊 Bar Chart – SONRA
+    st.markdown("### 📊 Average Energy Consumption (Bar Chart)")
     fig_bar = px.bar(
         avg_df,
         x="Energy Source",
@@ -326,7 +325,6 @@ elif page == "⚖️ Country vs Energy Type":
     )
     fig_bar.update_traces(texttemplate='%{text:.2s}', textposition='outside')
     st.plotly_chart(fig_bar, use_container_width=True)
-
 
 
 
