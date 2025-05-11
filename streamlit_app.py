@@ -13,7 +13,7 @@ import streamlit as st
 # Page setup
 st.set_page_config(layout="wide")
 st.sidebar.title("📊 Dashboard Menu")
-page = st.sidebar.radio("Select a page:", ["🏠 Home", "🌍 Global Map", "🌐 Country-Level Deep Analysis", "📈 Energy Growth Rates"])
+page = st.sidebar.radio("Select a page:", ["🏠 Home", "🌍 Global Map", "🌐 Country-Level Deep Analysis", "📈 Energy Growth Rates", "⚖️ Country vs Energy Type"])
 
 # Load dataset
 @st.cache_data
@@ -261,5 +261,73 @@ elif page == "📈 Energy Growth Rates":
     )
 
     st.plotly_chart(fig, use_container_width=True)
+
+    
+    # ⚖️ Country vs Energy Type"
+    elif page == "⚖️ Country vs Energy Type":
+    st.title("⚖️ Country-Specific Energy Source Breakdown")
+    st.markdown("Compare energy source consumption breakdown for a selected country by year or year range.")
+
+    # Enerji kolonları
+    energy_cols = [col for col in df.columns if col.endswith("_consumption")]
+    df_energy = df[["country", "year"] + energy_cols].dropna()
+
+    # Ülke seçimi
+    country_list = sorted(df_energy["country"].unique())
+    selected_country = st.selectbox("Select a Country:", country_list)
+
+    # Yıl aralığı
+    min_year = int(df_energy["year"].min())
+    max_year = int(df_energy["year"].max())
+    year_range = st.slider("Select Year Range:", min_year, max_year, (2020, 2022))
+
+    # Filtreleme
+    country_data = df_energy[(df_energy["country"] == selected_country) & 
+                             (df_energy["year"] >= year_range[0]) & 
+                             (df_energy["year"] <= year_range[1])]
+
+    # Enerji türleri seçimi
+    selected_energy = st.multiselect("Select Energy Sources to Compare:", energy_cols, default=energy_cols[:5])
+
+    # Ortalama tüketim hesaplama
+    avg_data = country_data[selected_energy].mean().sort_values(ascending=False)
+    avg_df = avg_data.reset_index()
+    avg_df.columns = ["Energy Source", "Average Consumption"]
+
+    # Bar chart
+    st.markdown("### 📊 Average Energy Consumption")
+    fig_bar = px.bar(
+        avg_df,
+        x="Energy Source",
+        y="Average Consumption",
+        text="Average Consumption",
+        title=f"{selected_country} – Average Consumption ({year_range[0]}–{year_range[1]})",
+        labels={"Average Consumption": "kWh"},
+        color="Average Consumption",
+        color_continuous_scale="Tealgrn"
+    )
+    fig_bar.update_layout(
+        xaxis_tickangle=30,
+        height=600,
+        template="plotly_white"
+    )
+    fig_bar.update_traces(texttemplate='%{text:.2s}', textposition='outside')
+    st.plotly_chart(fig_bar, use_container_width=True)
+
+    # Opsiyonel: Pie chart
+    if st.checkbox("🧩 Show Pie Chart"):
+        fig_pie = px.pie(
+            avg_df,
+            names="Energy Source",
+            values="Average Consumption",
+            title=f"{selected_country} – Energy Type Share ({year_range[0]}–{year_range[1]})",
+            hole=0.3
+        )
+        fig_pie.update_layout(template="plotly_white")
+        st.plotly_chart(fig_pie, use_container_width=True)
+
+
+
+
 
 
