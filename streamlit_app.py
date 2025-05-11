@@ -293,6 +293,19 @@ elif page == "⚖️ Country vs Energy Type":
     avg_data = country_data[selected_energy].mean().sort_values(ascending=False)
     avg_df = avg_data.reset_index()
     avg_df.columns = ["Energy Source", "Average Consumption"]
+    
+    #Pie chart
+    st.markdown("🧩 Show Pie Chart"):
+        fig_pie = px.pie(
+            avg_df,
+            names="Energy Source",
+            values="Average Consumption",
+            title=f"{selected_country} – Energy Type Share ({year_range[0]}–{year_range[1]})",
+            hole=0.3
+        )
+        fig_pie.update_layout(template="plotly_white")
+        st.plotly_chart(fig_pie, use_container_width=True)
+
 
     # Bar chart
     st.markdown("### 📊 Average Energy Consumption")
@@ -313,19 +326,6 @@ elif page == "⚖️ Country vs Energy Type":
     )
     fig_bar.update_traces(texttemplate='%{text:.2s}', textposition='outside')
     st.plotly_chart(fig_bar, use_container_width=True)
-
-    # Opsiyonel: Pie chart
-    if st.checkbox("🧩 Show Pie Chart"):
-        fig_pie = px.pie(
-            avg_df,
-            names="Energy Source",
-            values="Average Consumption",
-            title=f"{selected_country} – Energy Type Share ({year_range[0]}–{year_range[1]})",
-            hole=0.3
-        )
-        fig_pie.update_layout(template="plotly_white")
-        st.plotly_chart(fig_pie, use_container_width=True)
-
 
 
 
