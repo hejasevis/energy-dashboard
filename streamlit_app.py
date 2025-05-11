@@ -16,10 +16,13 @@ from streamlit_option_menu import option_menu
 
 with st.sidebar:
     page = option_menu(
-     menu_title="📊 Dashboard Menu",
-     options=["🏠 Home", "🌍 Global Map", "🌐 Deep Analysis", "📈 Growth Rates", "⚖️ Country vs Energy Type"],
-     icons=[],  # ikonları boş geç
-     default_index=0
+        menu_title="📊 Dashboard Menu",
+        options=["🏠 Home", "🌍 Global Map", "🌐 Deep Analysis", "📈 Growth Rates", "⚖️ Country vs Energy Type"],
+        icons=[""] * 5,  # 👈 Tüm ikonları boş yapar
+        default_index=0,
+        styles={
+            "icon": {"display": "none"}  # 👈 Bu da ikonları tamamen gizler (görselden bile kaldırır)
+        }
     )
 
 
