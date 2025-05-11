@@ -264,7 +264,7 @@ elif page == "📈 Energy Growth Rates":
 
     
     # ⚖️ Country vs Energy Type"
-    elif page == "⚖️ Country vs Energy Type":
+elif page == "⚖️ Country vs Energy Type":
     st.title("⚖️ Country-Specific Energy Source Breakdown")
     st.markdown("Compare energy source consumption breakdown for a selected country by year or year range.")
 
