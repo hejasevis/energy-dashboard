@@ -6,3 +6,4 @@ mlxtend
 matplotlib
 seaborn
 networkx
+streamlit-option-menu
