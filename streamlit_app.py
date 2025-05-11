@@ -39,14 +39,19 @@ df = load_data()
  # 🏠 Home Page
 if page == "🏠 Home":
 
-    st.markdown("""
-    <style>
-    .custom-image {
-        margin: -40px auto -20px auto;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-    st.markdown('<img src="images/3.png" class="custom-image">', unsafe_allow_html=True)
+    st.markdown(
+        """
+        <style>
+        .block-container {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+    st.image("images/3.png", width=900)
 
 
 
