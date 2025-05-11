@@ -14,6 +14,13 @@ st.set_page_config(layout="wide")
 st.sidebar.title("📊 Dashboard Menu")
 page = st.sidebar.radio("Select a page:", ["🏠 Home", "🌍 Global Map", "🌐 Country-Level Deep Analysis"])
 
+# Load dataset
+@st.cache_data
+def load_data():
+    return pd.read_csv("owid-energy-data.csv")
+
+df = load_data()
+
  # 🏠 Home Page
 if page == "🏠 Home":
     st.image("images/1.png", use_column_width=True)
