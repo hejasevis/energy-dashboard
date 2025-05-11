@@ -21,38 +21,22 @@ def load_data():
 
 df = load_data()
 
-# 🏠 Home Page
-if page == "🏠 Home":
-    st.markdown(
+st.markdown(
     """
     <style>
-    .custom-image {
+    .small-margin {
         margin-top: -50px;
         margin-bottom: -30px;
-        display: block;
-        margin-left: auto;
-        margin-right: auto;
-        max-width: 100%;
-        height: auto;
     }
     </style>
-    <img src="images/1.svg" class="custom-image"/>
     """,
     unsafe_allow_html=True
-    )
-    st.title("🔌 Global Energy Dashboard")
-    st.markdown("This interactive dashboard visualizes global energy consumption data from [Our World in Data](https://ourworldindata.org/energy).")
+)
 
-    st.markdown("### 📊 Features:")
-    st.markdown("- 🌍 **Global Map**: Explore per capita energy consumption by country and year.")
-    st.markdown("- 🌐 **Country-Level Analysis**: Discover hidden associations between different energy types with support, confidence, and lift metrics.")
-    st.markdown("- 🔥 **Heatmaps & Rules**: Visualize energy consumption correlations and strongest association rules.")
+st.markdown('<div class="small-margin">', unsafe_allow_html=True)
+st.image("images/1.svg", use_container_width=True)
+st.markdown('</div>', unsafe_allow_html=True)
 
-    st.markdown("### 📝 How to Use:")
-    st.markdown("Select a page from the sidebar to start exploring the data.")
-
-    st.markdown("---")
-    st.info("This dashboard is developed as part of a Bachelor's Graduation Project in Computer Engineering.")
 
 # 🌍 Page 1 - Global Map
 elif page == "🌍 Global Map":
