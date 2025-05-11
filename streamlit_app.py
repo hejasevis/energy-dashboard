@@ -14,14 +14,18 @@ import streamlit as st
 st.set_page_config(layout="wide")
 from streamlit_option_menu import option_menu
 
+from streamlit_option_menu import option_menu
+
 with st.sidebar:
     page = option_menu(
-        menu_title="📊 Dashboard Menu",
-        options=["🏠 Home", "🌍 Global Map", "🌐 Deep Analysis", "📈 Growth Rates", "⚖️ Country vs Energy Type"],
-        icons=[""] * 5,  # 👈 Tüm ikonları boş yapar
+        menu_title="Dashboard Menu",     # 1) Başlıktan emojiyi çıkar
+        menu_icon="",                    # 2) Başlık ikonunu boş yap
+        options=["Home", "Global Map", "Deep Analysis", "Growth Rates", "Country vs Energy Type"],
+        icons=[""] * 5,                  # alt menü ikonlarını tamamen gizle
         default_index=0,
         styles={
-            "icon": {"display": "none"}  # 👈 Bu da ikonları tamamen gizler (görselden bile kaldırır)
+            "icon": {"display": "none"},         # ekstra garanti için ikonları CSS ile gizle
+            "menu-title": {"font-size": "20px"}  # istersen başlık boyutunu da ayarlayabilirsin
         }
     )
 
