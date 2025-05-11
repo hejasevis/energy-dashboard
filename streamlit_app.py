@@ -8,11 +8,17 @@ import plotly.graph_objects as go
 from sklearn.preprocessing import MinMaxScaler
 from mlxtend.frequent_patterns import apriori, association_rules
 from PIL import Image
+import streamlit as st
 from prophet import Prophet
 from prophet.plot import plot_plotly
 
+
 # Page setup
 st.set_page_config(layout="wide")
+from streamlit_option_menu import option_menu
+
+from streamlit_option_menu import option_menu
+
 from streamlit_option_menu import option_menu
 
 with st.sidebar:
@@ -21,7 +27,9 @@ with st.sidebar:
         options=["🏠 Home", "🌍 Global Map", "🌐 Deep Analysis", "📈 Growth Rates", "⚖️ Country vs Energy Type","🔮 Energy Consumption Forecast"],
         icons=[""] * 6,
         default_index=0,
-        styles={"icon": {"display": "none"}}
+        styles={
+            "icon": {"display": "none"}
+        }
     )
 
 # Load dataset
@@ -31,27 +39,32 @@ def load_data():
 
 df = load_data()
 
-    # 🏠 Home Page 
+ # 🏠 Home Page
 if page == "🏠 Home":
+    
     st.image("images/b.png", use_container_width=True)
+
     st.title("🔌 Global Energy Dashboard")
     st.markdown("This interactive dashboard visualizes global energy consumption data from [Our World in Data](https://ourworldindata.org/energy).")
+
     st.markdown("### 📊 Features:")
     st.markdown("- 🌍 **Global Map**: Explore per capita energy consumption by country and year.")
     st.markdown("- 🌐 **Country-Level Analysis**: Discover hidden associations between different energy types with support, confidence, and lift metrics.")
     st.markdown("- 🔥 **Heatmaps & Rules**: Visualize energy consumption correlations and strongest association rules.")
+
     st.markdown("### 📝 How to Use:")
     st.markdown("Select a page from the sidebar to start exploring the data.")
+
     st.markdown("---")
     st.info("This dashboard is developed as part of a Bachelor's Graduation Project in Computer Engineering.")
 
 
-
-    # 🌍 Global Map
+# 🌍 Page 1 - Global Map
 elif page == "🌍 Global Map":
     st.title("🌍 Global Energy Consumption per Capita")
     st.markdown("Measured in kilowatt-hours per person. Source: [Our World in Data](https://ourworldindata.org/energy)")
 
+    st.markdown("### 📅 Year Selection")
     df_map = df[["iso_code", "country", "year", "energy_per_capita"]].dropna()
     year = st.slider("Select Year", int(df_map["year"].min()), int(df_map["year"].max()), 2023)
     df_year = df_map[df_map["year"] == year]
@@ -92,92 +105,8 @@ elif page == "🌍 Global Map":
     )
 
     st.plotly_chart(fig, use_container_width=True)
-
-    # 🧠 Automatic Interpretation for Global Map
-    st.markdown("### 🧠 Interpretation")
-    world_avg = df_year["energy_per_capita"].mean()
-    country_val = selected_row['energy_per_capita']
-    diff_percent = ((country_val - world_avg) / world_avg) * 100
-
-    if diff_percent > 0:
-        trend_desc = f"🔼 higher than"
-    else:
-        trend_desc = f"🔽 lower than"
-
-    st.markdown(f"""
-    - The selected country, **{selected_country}**, has an energy consumption per capita of **{country_val:.2f} kWh/person**.
-    - This is **{abs(diff_percent):.2f}% {trend_desc}** the global average of **{world_avg:.2f} kWh/person** in {year}.
-    """)
-
-
-    # 📈 Growth Rates
-elif page == "📈 Growth Rates":
-    st.title("📈 Energy Source Growth Analysis")
-    st.markdown("Visualize **annual growth/change rates** of various energy sources for the World or selected countries.")
-
-    energy_cols = [col for col in df.columns if col.endswith("_consumption")]
-    df_clean = df[["country", "year"] + energy_cols].dropna()
-
-    countries = sorted(df_clean["country"].unique())
-    countries.insert(0, "World")
-    selected_country = st.selectbox("Select Country (or World):", countries)
-
-    country_df = df_clean[df_clean["country"] == selected_country]
-    min_year = int(country_df["year"].min())
-    max_year = int(country_df["year"].max())
-    year_range = st.slider("Select Year Range:", min_year, max_year, (2010, 2022))
-    filtered_df = country_df[(country_df["year"] >= year_range[0]) & (country_df["year"] <= year_range[1])].copy()
-
-    for col in energy_cols:
-        filtered_df[col + "_change_%"] = filtered_df[col].pct_change() * 100
-
-    selected_sources = st.multiselect("Select Energy Sources:", energy_cols, default=energy_cols[:3])
-
-    st.markdown("### 📊 Annual Growth Rates by Source")
-    fig = go.Figure()
-
-    for col in selected_sources:
-        fig.add_trace(go.Scatter(
-            x=filtered_df["year"],
-            y=filtered_df[col + "_change_%"],
-            mode='lines+markers',
-            name=col.replace("_consumption", "").title()
-        ))
-
-    fig.update_layout(
-        title=f"{selected_country} – Annual Energy Consumption Growth Rates",
-        xaxis_title="Year",
-        yaxis_title="Change Rate (%)",
-        template="plotly_white",
-        hovermode="x unified"
-    )
-
-    st.plotly_chart(fig, use_container_width=True)
-
-    # 🧠 Automatic Interpretation for Growth Rates
-    st.markdown("### 🧠 Interpretation")
-    growth_summary = {}
-    for col in selected_sources:
-        col_name = col.replace("_consumption", "").title()
-        changes = filtered_df[col + "_change_%"].dropna()
-        if len(changes) > 1:
-            avg_change = changes.mean()
-            growth_summary[col_name] = avg_change
-
-    if growth_summary:
-        sorted_growth = sorted(growth_summary.items(), key=lambda x: x[1], reverse=True)
-        top_growth = sorted_growth[0]
-        lowest_growth = sorted_growth[-1]
-
-        st.markdown(f"""
-        - The fastest growing energy source in {selected_country} between **{year_range[0]}–{year_range[1]}** is **{top_growth[0]}** with an average annual change of **{top_growth[1]:.2f}%**.
-        - The slowest (or most decreasing) energy source is **{lowest_growth[0]}** with **{lowest_growth[1]:.2f}%**.
-        """)
-    else:
-        st.info("Not enough data to interpret growth trends.")
-
-        
-        # 🌐 Deep Analysis
+    
+    # 🌐 Page 2 - Country-Level Deep Analysis
 elif page == "🌐 Deep Analysis":
     st.title("🔗 Energy Consumption Association Analysis")
 
@@ -215,13 +144,15 @@ elif page == "🌐 Deep Analysis":
         rules = association_rules(frequent_itemsets, metric="lift", min_threshold=min_lift)
         rules_sorted = rules.sort_values(by=["lift", "confidence", "support"], ascending=False)
 
-        # 📋 Association Rules Table
+        # 📋 1. Association Rules Table
         st.subheader("📋 Association Rules")
         st.markdown(f"📅 Showing rules for **{year_range[0]}–{year_range[1]}**")
         st.dataframe(rules_sorted)
 
-        # 🔥 Correlation Heatmap
+        # 🔥 2. Correlation Heatmap (Plotly)
         st.subheader("🔥 Correlation Heatmap")
+        import plotly.figure_factory as ff
+
         corr = norm_df.corr()
         z = corr.values
         x = list(corr.columns)
@@ -255,7 +186,7 @@ elif page == "🌐 Deep Analysis":
 
         st.plotly_chart(fig_heatmap, use_container_width=True)
 
-        # 📊 Top 10 Rules by Support
+        # 📊 3. Top 10 Rules by Support (Bar Chart)
         st.subheader("📊 Top 10 Rules by Support")
 
         if not rules_sorted.empty:
@@ -288,33 +219,151 @@ elif page == "🌐 Deep Analysis":
                 title_font_size=20,
                 font=dict(size=12),
                 height=600,
-                margin=dict(l=60, r=60, t=60, b=200),
+                margin=dict(l=60, r=60, t=60, b=200),  # ← bu doğru olan
                 plot_bgcolor='rgba(0,0,0,0)',
                 paper_bgcolor='rgba(0,0,0,0)',
             )
 
             st.plotly_chart(fig2, use_container_width=True)
-
-            # 🧠 Interpretation for Deep Analysis
-            st.markdown("### 🧠 Interpretation")
-            top_rule = rules_sorted.iloc[0]
-            antecedents = format_set(top_rule['antecedents'])
-            consequents = format_set(top_rule['consequents'])
-            lift = top_rule['lift']
-            confidence = top_rule['confidence'] * 100
-            support = top_rule['support'] * 100
-
-            st.markdown(f"""
-            - The strongest association found is: **{antecedents} → {consequents}**
-            - This rule has a **lift of {lift:.2f}**, indicating that countries using {antecedents} are **{lift:.2f}x more likely** to also use {consequents}.
-            - Confidence: **{confidence:.2f}%**, Support: **{support:.2f}%**
-            """)
-
         else:
             st.warning("No rules to visualize. Try adjusting thresholds or year range.")
+           
+
+# 📈 Energy Growth Rates 
+elif page == "📈 Growth Rates":
+    st.title("📈 Energy Source Growth Analysis")
+    st.markdown("Visualize **annual growth/change rates** of various energy sources for the World or selected countries.")
+
+    # 📊 Veriyi yükle
+    energy_cols = [col for col in df.columns if col.endswith("_consumption")]
+    df_clean = df[["country", "year"] + energy_cols].dropna()
+
+    # 🌍 Ülke seçimi
+    countries = sorted(df_clean["country"].unique())
+    countries.insert(0, "World")
+    selected_country = st.selectbox("Select Country (or World):", countries)
+
+    # 📆 Yıl aralığı seçimi
+    country_df = df_clean[df_clean["country"] == selected_country]
+    min_year = int(country_df["year"].min())
+    max_year = int(country_df["year"].max())
+    year_range = st.slider("Select Year Range:", min_year, max_year, (2010, 2022))
+    filtered_df = country_df[(country_df["year"] >= year_range[0]) & (country_df["year"] <= year_range[1])].copy()
+
+    # 🔢 Yıllık % değişim oranı hesapla
+    for col in energy_cols:
+        filtered_df[col + "_change_%"] = filtered_df[col].pct_change() * 100
+
+    # ⚡ Enerji türü seçimi
+    selected_sources = st.multiselect("Select Energy Sources:", energy_cols, default=energy_cols[:3])
+
+    # 📈 Plotly grafiği oluştur
+    st.markdown("### 📊 Annual Growth Rates by Source")
+    fig = go.Figure()
+
+    for col in selected_sources:
+        fig.add_trace(go.Scatter(
+            x=filtered_df["year"],
+            y=filtered_df[col + "_change_%"],
+            mode='lines+markers',
+            name=col.replace("_consumption", "").title()
+        ))
+
+    fig.update_layout(
+        title=f"{selected_country} – Annual Energy Consumption Growth Rates",
+        xaxis_title="Year",
+        yaxis_title="Change Rate (%)",
+        template="plotly_white",
+        hovermode="x unified"
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+    
+    # ⚖️ Country vs Energy Type"
+elif page == "⚖️ Country vs Energy Type":
+    st.title("⚖️ Country-Specific Energy Source Breakdown")
+    st.markdown("Compare energy source consumption breakdown for a selected country by year or year range.")
+
+    # Enerji kolonları
+    energy_cols = [col for col in df.columns if col.endswith("_consumption")]
+    df_energy = df[["country", "year"] + energy_cols].dropna()
+
+    # Ülke seçimi
+    country_list = sorted(df_energy["country"].unique())
+    selected_country = st.selectbox("Select a Country:", country_list)
+
+    # Yıl aralığı seçimi
+    min_year = int(df_energy["year"].min())
+    max_year = int(df_energy["year"].max())
+    year_range = st.slider("Select Year Range:", min_year, max_year, (2020, 2022))
+
+    # Filtrelenmiş veri
+    country_data = df_energy[(df_energy["country"] == selected_country) & 
+                             (df_energy["year"] >= year_range[0]) & 
+                             (df_energy["year"] <= year_range[1])]
+
+    # Enerji türü seçimi
+    selected_energy = st.multiselect("Select Energy Sources to Compare:", energy_cols, default=energy_cols[:5])
+
+    # Ortalama tüketim hesapla
+    avg_data = country_data[selected_energy].mean().sort_values(ascending=False)
+    avg_df = avg_data.reset_index()
+    avg_df.columns = ["Energy Source", "Average Consumption"]
+
+    # 🥧 Pie Chart
+    st.markdown("### 🥧 Energy Type Share (Pie Chart)")
+    fig_pie = px.pie(
+        avg_df,
+        names="Energy Source",
+        values="Average Consumption",
+        title=f"{selected_country} – Energy Type Share ({year_range[0]}–{year_range[1]})",
+        hole=0.3
+    )
+    fig_pie.update_layout(template="plotly_white")
+    st.plotly_chart(fig_pie, use_container_width=True)
+
+    # 📊 Bar Chart – SONRA
+    st.markdown("### 📊 Average Energy Consumption (Bar Chart)")
+    fig_bar = px.bar(
+        avg_df,
+        x="Energy Source",
+        y="Average Consumption",
+        text="Average Consumption",
+        title=f"{selected_country} – Average Consumption ({year_range[0]}–{year_range[1]})",
+        labels={"Average Consumption": "kWh"},
+        color="Average Consumption",
+        color_continuous_scale="Tealgrn"
+    )
+    fig_bar.update_layout(
+        xaxis_tickangle=30,
+        height=600,
+        template="plotly_white"
+    )
+    fig_bar.update_traces(texttemplate='%{text:.2s}', textposition='outside')
+    st.plotly_chart(fig_bar, use_container_width=True)
+        # 📋 Otomatik Yorumlama
+    st.markdown("### 🧠 Automatic Insights")
+
+    total = avg_df["Average Consumption"].sum()
+    avg_df["Percentage"] = (avg_df["Average Consumption"] / total * 100).round(2)
+
+    top_row = avg_df.iloc[0]
+    bottom_row = avg_df.iloc[-1]
+
+    st.markdown(f"""
+    - **Most used energy source:** `{top_row['Energy Source'].replace('_consumption', '').title()}` with **{top_row['Percentage']}%**
+    - **Least used energy source:** `{bottom_row['Energy Source'].replace('_consumption', '').title()}` with **{bottom_row['Percentage']}%**
+    - Total consumption (for selected sources and years): **{total:,.0f} kWh**
+    """)
+
+    # 👀 Detaylı oranlar listesi
+    with st.expander("🔍 See Full Share Breakdown"):
+        for _, row in avg_df.iterrows():
+            st.markdown(f"- `{row['Energy Source'].replace('_consumption', '').title()}`: **{row['Percentage']}%**")
 
 
-            # 🔮 Energy Consumption Forecast
+    # 🔮 Energy Consumption Forecast
 elif page == "🔮 Energy Consumption Forecast":
     st.title("🔮 Forecasting Energy Consumption")
     st.markdown("Predict future consumption for a selected country and energy source using time series modeling (Prophet).")
@@ -325,29 +374,38 @@ elif page == "🔮 Energy Consumption Forecast":
     except ImportError:
         st.error("❌ Prophet is not installed. Please add `prophet` to your requirements.txt file.")
 
+    # Enerji tüketim sütunlarını al
     energy_cols = [col for col in df.columns if col.endswith("_consumption")]
     df_forecast = df[["country", "year"] + energy_cols].dropna()
 
+    # Ülke ve enerji türü seçimi
     countries = sorted(df_forecast["country"].unique())
     selected_country = st.selectbox("🌍 Select a Country:", countries)
+
     selected_source = st.selectbox("⚡ Select Energy Type:", energy_cols)
 
+    # Seçilen ülke ve kaynak için veri hazırlığı
     country_data = df_forecast[df_forecast["country"] == selected_country][["year", selected_source]].copy()
     country_data = country_data.dropna()
 
     if country_data.empty:
         st.warning("No data available for this selection.")
     else:
+        # Prophet formatı: ds (date), y (value)
         country_data.columns = ["ds", "y"]
         country_data["ds"] = pd.to_datetime(country_data["ds"], format="%Y")
 
+        # Prophet modeli
         model = Prophet(yearly_seasonality=True)
         model.fit(country_data)
 
+        # Kullanıcıdan tahmin yılı sayısı
         future_years = st.slider("🗓️ Years to Predict:", 1, 20, 5)
+
         future = model.make_future_dataframe(periods=future_years, freq="Y")
         forecast = model.predict(future)
 
+        # Tahmin grafiği
         st.markdown("### 📈 Forecast Plot")
         fig1 = plot_plotly(model, forecast)
         fig1.update_layout(
@@ -356,34 +414,43 @@ elif page == "🔮 Energy Consumption Forecast":
         )
         st.plotly_chart(fig1, use_container_width=True)
 
+        # Tahmin tablosu
         st.markdown("### 📋 Forecasted Values")
         forecast_display = forecast[["ds", "yhat", "yhat_lower", "yhat_upper"]].tail(future_years)
         forecast_display.columns = ["Year", "Prediction", "Lower Bound", "Upper Bound"]
         forecast_display["Year"] = forecast_display["Year"].dt.year
         st.dataframe(forecast_display)
-
-        # 🧠 Forecast Interpretation
+        
+        # 🧠 Yorum
         st.markdown("### 🧠 Forecast Interpretation")
 
+        # Yıl bazlı fark hesapla
         future_diff = forecast_display["Prediction"].diff().dropna()
         avg_growth = future_diff.mean()
         trend = "increasing" if avg_growth > 0 else "decreasing"
         direction_arrow = "📈" if avg_growth > 0 else "📉"
 
+        # Ortalama büyüme yüzdesi
         first_val = forecast_display["Prediction"].iloc[0]
         last_val = forecast_display["Prediction"].iloc[-1]
         growth_percent = ((last_val - first_val) / first_val) * 100 if first_val != 0 else 0
 
+        # Güven aralığı yorumu
         forecast_display["uncertainty"] = forecast_display["Upper Bound"] - forecast_display["Lower Bound"]
         avg_uncertainty = forecast_display["uncertainty"].mean()
-
-        model_confidence = "high" if avg_uncertainty > first_val * 0.3 else "reasonable"
 
         st.markdown(f"""
         - {direction_arrow} **The predicted trend is {trend}.**
         - The average yearly change is approximately **{avg_growth:,.0f} kWh**.
         - From {forecast_display['Year'].iloc[0]} to {forecast_display['Year'].iloc[-1]}, the predicted consumption changes by **{growth_percent:.2f}%**.
-        - The average uncertainty in prediction is around **±{avg_uncertainty:,.0f} kWh**, which indicates **{model_confidence}** model confidence.
+        - The average uncertainty in prediction is around **±{avg_uncertainty:,.0f} kWh**, which indicates {"high" if avg_uncertainty > first_val * 0.3 else "reasonable"} model confidence.
         """)
 
         st.caption("📘 This summary is generated automatically based on Prophet model outputs.")
+
+
+
+
+
+
+
