@@ -9,6 +9,9 @@ from sklearn.preprocessing import MinMaxScaler
 from mlxtend.frequent_patterns import apriori, association_rules
 from PIL import Image
 import streamlit as st
+from prophet import Prophet
+from prophet.plot import plot_plotly
+
 
 # Page setup
 st.set_page_config(layout="wide")
@@ -21,7 +24,7 @@ from streamlit_option_menu import option_menu
 with st.sidebar:
     page = option_menu(
         menu_title="Dashboard Menu",
-        options=["🏠 Home", "🌍 Global Map", "🌐 Deep Analysis", "📈 Growth Rates", "⚖️ Country vs Energy Type"],
+        options=["🏠 Home", "🌍 Global Map", "🌐 Deep Analysis", "📈 Growth Rates", "⚖️ Country vs Energy Type","🔮 Energy Consumption Forecast"],
         icons=[""] * 5,
         default_index=0,
         styles={
@@ -308,7 +311,7 @@ elif page == "⚖️ Country vs Energy Type":
     avg_df = avg_data.reset_index()
     avg_df.columns = ["Energy Source", "Average Consumption"]
 
-    # 🥧 Pie Chart – ÖNCE
+    # 🥧 Pie Chart
     st.markdown("### 🥧 Energy Type Share (Pie Chart)")
     fig_pie = px.pie(
         avg_df,
@@ -358,6 +361,66 @@ elif page == "⚖️ Country vs Energy Type":
     with st.expander("🔍 See Full Share Breakdown"):
         for _, row in avg_df.iterrows():
             st.markdown(f"- `{row['Energy Source'].replace('_consumption', '').title()}`: **{row['Percentage']}%**")
+
+
+    # 🔮 Energy Consumption Forecast
+elif page == "🔮 Energy Consumption Forecast":
+    st.title("🔮 Forecasting Energy Consumption")
+    st.markdown("Predict future consumption for a selected country and energy source using time series modeling (Prophet).")
+
+    try:
+        from prophet import Prophet
+        from prophet.plot import plot_plotly
+    except ImportError:
+        st.error("❌ Prophet is not installed. Please add `prophet` to your requirements.txt file.")
+
+    # Enerji tüketim sütunlarını al
+    energy_cols = [col for col in df.columns if col.endswith("_consumption")]
+    df_forecast = df[["country", "year"] + energy_cols].dropna()
+
+    # Ülke ve enerji türü seçimi
+    countries = sorted(df_forecast["country"].unique())
+    selected_country = st.selectbox("🌍 Select a Country:", countries)
+
+    selected_source = st.selectbox("⚡ Select Energy Type:", energy_cols)
+
+    # Seçilen ülke ve kaynak için veri hazırlığı
+    country_data = df_forecast[df_forecast["country"] == selected_country][["year", selected_source]].copy()
+    country_data = country_data.dropna()
+
+    if country_data.empty:
+        st.warning("No data available for this selection.")
+    else:
+        # Prophet formatı: ds (date), y (value)
+        country_data.columns = ["ds", "y"]
+        country_data["ds"] = pd.to_datetime(country_data["ds"], format="%Y")
+
+        # Prophet modeli
+        model = Prophet(yearly_seasonality=True)
+        model.fit(country_data)
+
+        # Kullanıcıdan tahmin yılı sayısı
+        future_years = st.slider("🗓️ Years to Predict:", 1, 20, 5)
+
+        future = model.make_future_dataframe(periods=future_years, freq="Y")
+        forecast = model.predict(future)
+
+        # Tahmin grafiği
+        st.markdown("### 📈 Forecast Plot")
+        fig1 = plot_plotly(model, forecast)
+        fig1.update_layout(
+            height=600,
+            title=f"{selected_country} – Forecast of {selected_source.replace('_consumption', '').title()} Consumption"
+        )
+        st.plotly_chart(fig1, use_container_width=True)
+
+        # Tahmin tablosu
+        st.markdown("### 📋 Forecasted Values")
+        forecast_display = forecast[["ds", "yhat", "yhat_lower", "yhat_upper"]].tail(future_years)
+        forecast_display.columns = ["Year", "Prediction", "Lower Bound", "Upper Bound"]
+        forecast_display["Year"] = forecast_display["Year"].dt.year
+        st.dataframe(forecast_display)
+
 
 
 
