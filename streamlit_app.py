@@ -32,7 +32,7 @@ if page == "🏠 Home":
     </style>
     """, unsafe_allow_html=True)
 
-    st.image("images/a.png", width=900)
+    st.image("images/2.svg", width=900)
 
     st.title("🔌 Global Energy Dashboard")
     st.markdown("This interactive dashboard visualizes global energy consumption data from [Our World in Data](https://ourworldindata.org/energy).")
