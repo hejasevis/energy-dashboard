@@ -34,7 +34,7 @@ st.set_page_config(layout="wide")
 # Sidebar Navigation Menu
 with st.sidebar:
     page = option_menu(
-        menu_title="Navigation",
+        menu_title="Menu",
         options=[
             "Home",
             "Global Energy Map",
