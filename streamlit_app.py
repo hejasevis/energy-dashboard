@@ -31,27 +31,49 @@ from streamlit_option_menu import option_menu
 # Page Configuration
 st.set_page_config(layout="wide")
 
-# Apply Theme
-st.markdown(
-    """
-    <style>
-        body {
-            background-color: white !important;
-            color: black !important;
+# --- Theme Handling --- #
+if "dark_mode" not in st.session_state:
+    st.session_state.dark_mode = False
+
+def theme_colors(dark: bool):
+    """Return color scheme based on theme."""
+    if dark:
+        return {
+            "bg": "#1e1e1e",
+            "secondary": "#333333",
+            "text": "#f1f1f1",
+            "hover": "#444444",
+            "icon": "#f1f1f1",
         }
-        .main {
-            background-color: white !important;
-        }
-        .css-1d391kg, .css-hxt7ib, .css-1v0mbdj, .css-18e3th9 {
-            background-color: #f9f9f9 !important;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True
-)
+    return {
+        "bg": "white",
+        "secondary": "#f9f9f9",
+        "text": "black",
+        "hover": "#e0e0e0",
+        "icon": "#000000",
+    }
 
 # Sidebar Navigation Menu
 with st.sidebar:
+    st.session_state.dark_mode = st.toggle("🌙 Dark Mode", value=st.session_state.dark_mode)
+    colors = theme_colors(st.session_state.dark_mode)
+    menu_styles = {
+        "container": {"padding": "5px", "background-color": colors["secondary"], "border-radius": "8px"},
+        "nav-link": {
+            "font-size": "16px",
+            "text-align": "left",
+            "margin": "5px",
+            "--hover-color": colors["hover"],
+            "color": colors["text"],
+        },
+        "nav-link-selected": {
+            "background-color": "#5e60ce",
+            "color": "white",
+            "font-weight": "bold",
+            "border-radius": "8px",
+        },
+        "icon": {"color": colors["icon"]},
+    }
     page = option_menu(
         menu_title="Dashboard Menu",
         options=[
@@ -60,27 +82,34 @@ with st.sidebar:
             "Energy Relationships",
             "Growth Rate Trends",
             "Country Energy Mix",
-            "Future Energy Forecast"
+            "Future Energy Forecast",
         ],
         icons=["house", "globe", "bar-chart-line", "graph-up-arrow", "pie-chart", "stars"],
         default_index=0,
-        styles={
-            "container": {"padding": "0!important", "background-color": "#f9f9f9"},
-            "nav-link": {
-                "font-size": "16px",
-                "text-align": "left",
-                "margin": "5px",
-                "--hover-color": "#e0e0e0",
-            },
-            "nav-link-selected": {
-                "background-color": "#5e60ce",
-                "color": "white",
-                "font-weight": "bold",
-                "border-radius": "8px",
-            },
-            "icon": {"color": "#000000"},
-        }
+        styles=menu_styles,
     )
+
+colors = theme_colors(st.session_state.dark_mode)
+st.markdown(
+    f"""
+    <style>
+        body {{
+            background-color: {colors['bg']} !important;
+            color: {colors['text']} !important;
+        }}
+        .main {{
+            background-color: {colors['bg']} !important;
+        }}
+        div[data-testid="stSidebar"] > div:first-child {{
+            background-color: {colors['secondary']} !important;
+        }}
+        .css-1d391kg, .css-hxt7ib, .css-1v0mbdj, .css-18e3th9 {{
+            background-color: {colors['secondary']} !important;
+        }}
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 # Load dataset
 @st.cache_data
