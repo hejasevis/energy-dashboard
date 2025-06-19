@@ -54,7 +54,7 @@ def load_data():
 
 df = load_data()
 
-# 🏠 Home
+# Home
 if page == "Home":
 
     st.image("images/background.png", use_container_width=True)
@@ -93,20 +93,20 @@ if page == "Home":
     st.info("📌 *This dashboard is developed using Python, Streamlit, and machine learning tools as part of a final year project.*")
 
 
-# 🗺️ Page 1 -  Global Energy Map
+# Page 1 -  Global Energy Map
 elif page == "Global Energy Map":
 
-    # 📌 Page Title and Introductory Info
+    # Page Title and Introductory Info
     st.title("🗺️ Global Map of Energy Use per Capita")
 
-    # ℹ️ Helper info box to guide users
+    # Helper info box to guide users
     st.info("""
     This map illustrates per capita energy consumption (in kilowatt-hours per person) 
     across countries for a selected year.  
     Use the **slider** to pick a year and the **dropdown** to explore a specific country's values.
     """)
 
-    # 📌 Year selection section for filtering the map data
+    # Year selection section for filtering the map data
     st.markdown("### 📅 Year Selection")
 
     # Select relevant columns and remove rows with missing values
@@ -118,14 +118,14 @@ elif page == "Global Energy Map":
     # Filter the data based on selected year
     df_year = df_map[df_map["year"] == year]
 
-    # 📌 Country selection for displaying specific data
+    # Country selection for displaying specific data
     country_list = sorted(df_year["country"].unique())
     selected_country = st.selectbox("🌎 Select a Country to View Details", country_list)
 
     # Get data for the selected country
     selected_row = df_year[df_year["country"] == selected_country].iloc[0]
 
-    # 📌 Choropleth Map
+    # Choropleth Map
     # This visualizes per capita energy consumption using a colored world map
     fig = px.choropleth(
         df_year,
@@ -144,8 +144,7 @@ elif page == "Global Energy Map":
         projection_type="natural earth"
     )
 
-    # 📌 Layout and Theme
-    # Custom styling for dark mode compatibility
+    # Layout and Theme
     fig.update_layout(
     template="plotly_white",  # Light mode styling
     margin=dict(l=0, r=0, t=60, b=0),
@@ -157,10 +156,10 @@ elif page == "Global Energy Map":
     )
 
 
-    # 📌 Render the map
+    # Render the map
     st.plotly_chart(fig, use_container_width=True)
 
-    # 📌 Additional analysis and country-level metrics
+    # Additional analysis and country-level metrics
 
     # Calculate global average for comparison
     global_avg = df_year["energy_per_capita"].mean()
@@ -183,20 +182,20 @@ elif page == "Global Energy Map":
     """)
 
   
-# 🌐 Page 2 - Energy Relationships 
+# Page 2 - Energy Relationships 
 elif page == "Energy Relationships":
 
-    # 📌 Page Title and Overview
+    # Page Title and Overview
     st.title("🌐 Country-Level Energy Pattern Discovery")
 
-    # ℹ️ Explain the purpose of the page
+    # Explain the purpose of the page
     st.info("""
     This section applies **association rule mining** and **correlation analysis** to uncover hidden relationships 
     between energy consumption types in selected countries and years.  
     You can adjust thresholds, year range, and countries to explore different patterns.
     """)
 
-    # 📌 User Inputs: countries, thresholds, year range
+    # User Inputs: countries, thresholds, year range
     selected_countries = st.multiselect(
         "Select Countries",
         sorted(df["country"].dropna().unique()),
@@ -208,40 +207,40 @@ elif page == "Energy Relationships":
     min_lift = st.slider("Minimum Lift", 1.0, 5.0, 1.0)
     year_range = st.slider("Select Year Range", 1965, 2023, (2000, 2022))
 
-    # 📌 Trigger analysis with button
+    # Trigger analysis with button
     if st.button("Run Analysis"):
 
-        # 📌 Filter the dataset based on user selection
+        # Filter the dataset based on user selection
         filtered_df = df[
             (df["country"].isin(selected_countries)) &
             (df["year"].between(year_range[0], year_range[1]))
         ].copy()
 
-        # 📌 Select only consumption-related columns, drop others
+        # Select only consumption-related columns, drop others
         energy_columns = [col for col in filtered_df.columns if 'consumption' in col and 'change' not in col]
         filtered_df = filtered_df[["country", "year"] + energy_columns].dropna()
 
-        # 📌 Normalize data between 0–1
+        # Normalize data between 0–1
         scaler = MinMaxScaler()
         normalized = scaler.fit_transform(filtered_df[energy_columns])
         norm_df = pd.DataFrame(normalized, columns=energy_columns)
 
-        # 📌 Binarize based on selected threshold
+        # Binarize based on selected threshold
         binary_df = (norm_df > threshold).astype(int)
 
-        # 📌 Apply Apriori algorithm to discover frequent itemsets
+        # Apply Apriori algorithm to discover frequent itemsets
         frequent_itemsets = apriori(binary_df, min_support=min_support, use_colnames=True)
 
-        # 📌 Generate association rules
+        # Generate association rules
         rules = association_rules(frequent_itemsets, metric="lift", min_threshold=min_lift)
         rules_sorted = rules.sort_values(by=["lift", "confidence", "support"], ascending=False)
 
-        # 📋 1. Association Rules Table
+        # 1. Association Rules Table
         st.subheader("📋 Association Rules")
         st.markdown(f"📅 Showing rules for **{year_range[0]}–{year_range[1]}**")
         st.dataframe(rules_sorted)
 
-        # ⚡️ 2. Correlation Heatmap
+        # 2. Correlation Heatmap
         st.subheader("⚡️ Correlation Heatmap")
         st.markdown("This heatmap shows normalized Pearson correlations between different energy consumption types.")
 
@@ -279,7 +278,7 @@ elif page == "Energy Relationships":
 
         st.plotly_chart(fig_heatmap, use_container_width=True)
 
-        # 📊 3. Top 10 Rules by Support
+        # 3. Top 10 Rules by Support
         st.subheader("📊 Top 10 Rules by Support")
         st.markdown("Shows the rules with the highest support values, indicating common energy patterns.")
 
@@ -322,7 +321,7 @@ elif page == "Energy Relationships":
         else:
             st.warning("No rules to visualize. Try adjusting thresholds or year range.")
 
-        # 🔍 4. Insights
+        # 4. Insights
         st.markdown("### 🔍 Insights")
         if not rules_sorted.empty:
             avg_support = rules_sorted['support'].mean()
@@ -338,53 +337,53 @@ elif page == "Energy Relationships":
             st.info("No insights available due to lack of valid rules.")
 
           
-# 📈 Page 3 - Growth Rate Trends
+# Page 3 - Growth Rate Trends
 elif page == "Growth Rate Trends":
 
-    # 📌 Page Title
+    # Page Title
     st.title("📈 Annual Growth Trends in Energy Consumption")
 
-    # ℹ️ Info box to explain this section
+    # Info box to explain this section
     st.info("""
     This section visualizes **annual growth rates** in energy consumption for various sources.  
     You can select a specific country or view global trends, and filter by year range and energy types.
     """)
 
-    # 📊 Select energy consumption columns (e.g. coal_consumption, solar_consumption)
+    # Select energy consumption columns (e.g. coal_consumption, solar_consumption)
     energy_cols = [col for col in df.columns if col.endswith("_consumption")]
 
-    # 📌 Drop rows with missing values in relevant columns
+    # Drop rows with missing values in relevant columns
     df_clean = df[["country", "year"] + energy_cols].dropna()
 
-    # 🌍 Country selection
+    # Country selection
     countries = sorted(df_clean["country"].unique())
     countries.insert(0, "World")  # Add 'World' to allow global analysis
     selected_country = st.selectbox("Select Country (or World):", countries)
 
-    # 📆 Year range selection
+    # Year range selection
     country_df = df_clean[df_clean["country"] == selected_country]
     min_year = int(country_df["year"].min())
     max_year = int(country_df["year"].max())
     year_range = st.slider("Select Year Range:", min_year, max_year, (2010, 2022))
 
-    # 📌 Filter data for selected year range
+    # Filter data for selected year range
     filtered_df = country_df[
         (country_df["year"] >= year_range[0]) &
         (country_df["year"] <= year_range[1])
     ].copy()
 
-    # 🔢 Calculate annual % change for each energy type
+    # Calculate annual % change for each energy type
     for col in energy_cols:
         filtered_df[col + "_change_%"] = filtered_df[col].pct_change() * 100
 
-    # ⚡ Energy source selection
+    # Energy source selection
     selected_sources = st.multiselect(
         "Select Energy Sources:",
         energy_cols,
         default=energy_cols[:3]
     )
 
-    # 📈 Plotly line chart
+    # Plotly line chart
     st.markdown("### 📊 Annual Growth Rates by Source")
 
     fig = go.Figure()
@@ -407,7 +406,7 @@ elif page == "Growth Rate Trends":
 
     st.plotly_chart(fig, use_container_width=True)
 
-    # 📊 Insight Section
+    # Insight Section
     st.markdown("### 💡 Insights")
 
     # Calculate average growth rate for each selected source
@@ -430,17 +429,17 @@ elif page == "Growth Rate Trends":
         st.dataframe(insight_df)
 
     
-# 🗺 Page 4 - Country Energy Mix
+# Page 4 - Country Energy Mix
 elif page == "Country Energy Mix":
 
-    # 📌 Title and Info Box
+    # Title and Info Box
     st.title("🗺 Energy Mix Analysis by Country and Year")
     st.info("""
     This section compares how different energy sources contribute to total energy consumption for a selected country.  
     You can analyze energy share based on a specific year range and focus on selected types such as fossil, nuclear, or renewables.
     """)
 
-    # 📌 Prepare column groups
+    # Prepare column groups
     energy_cols = [col for col in df.columns if col.endswith("_consumption")]
     renewable_cols = [
         "solar_consumption", "wind_consumption", "biofuel_consumption",
@@ -450,26 +449,26 @@ elif page == "Country Energy Mix":
         "coal_consumption", "oil_consumption", "gas_consumption", "nuclear_consumption"
     ]
 
-    # 📌 Drop rows with missing energy values
+    # Drop rows with missing energy values
     df_energy = df[["country", "year"] + energy_cols].dropna()
 
-    # 🌍 Country selection
+    # Country selection
     country_list = sorted(df_energy["country"].unique())
     selected_country = st.selectbox("Select a Country:", country_list)
 
-    # 📆 Year range selection
+    # Year range selection
     min_year = int(df_energy["year"].min())
     max_year = int(df_energy["year"].max())
     year_range = st.slider("Select Year Range:", min_year, max_year, (2020, 2022))
 
-    # 📌 Filter dataset by country and year
+    # Filter dataset by country and year
     country_data = df_energy[
         (df_energy["country"] == selected_country) &
         (df_energy["year"] >= year_range[0]) &
         (df_energy["year"] <= year_range[1])
     ]
 
-    # ⚡ Energy source selection
+    # Energy source selection
     selected_energy = st.multiselect(
         "Select Energy Sources to Compare:",
         energy_cols,
@@ -480,12 +479,12 @@ elif page == "Country Energy Mix":
         st.warning("Please select at least one energy source to display the energy mix.")
         st.stop()
 
-    # 📊 Average consumption for selected energy types
+    # Average consumption for selected energy types
     avg_data = country_data[selected_energy].mean().sort_values(ascending=False)
     avg_df = avg_data.reset_index()
     avg_df.columns = ["Energy Source", "Average Consumption"]
 
-    # 🥧 Pie Chart
+    # Pie Chart
     st.markdown("### 🥧 Energy Type Share (Pie Chart)")
     fig_pie = px.pie(
         avg_df,
@@ -497,7 +496,7 @@ elif page == "Country Energy Mix":
     fig_pie.update_layout(template="plotly_white")
     st.plotly_chart(fig_pie, use_container_width=True)
 
-    # ⚡ Insight Section
+    # Insight Section
     st.markdown("### ⚡ Insights")
 
     total = avg_df["Average Consumption"].sum()
@@ -512,7 +511,7 @@ elif page == "Country Energy Mix":
     - Total consumption (for selected sources and years): **{total:,.0f} kWh**
     """)
 
-    # 🔍 Expandable full breakdown
+    # Expandable full breakdown
     with st.expander("🔍 See Full Share Breakdown"):
         for _, row in avg_df.iterrows():
             st.markdown(f"- `{row['Energy Source'].replace('_consumption', '').title()}`: **{row['Percentage']}%**")
@@ -531,7 +530,7 @@ elif page == "Country Energy Mix":
         st.warning("Renewable/non-renewable data not sufficient to calculate ratio.")
 
 
-# 🔮 Future Energy Forecast
+# Future Energy Forecast
 elif page == "Future Energy Forecast":
     st.title("🔮 Future Energy Forecast with Machine Learning")
     st.info("""
@@ -708,7 +707,7 @@ elif page == "Future Energy Forecast":
         fig.update_layout(title="📊 Actual vs Predicted Energy Consumption", xaxis_title="Year", yaxis_title="Energy Consumption", template="plotly_white")
         st.plotly_chart(fig)
 
-    # 💡 Insight Section
+    # Insight Section
         st.subheader("💡 Forecasting Insights")
         stronger = "Prophet" if rmse_prophet < rmse_rf else "Random Forest"
         st.success(f"🔍 Based on RMSE, the **{stronger}** model performed better in this backtesting scenario.")
