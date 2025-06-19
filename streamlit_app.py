@@ -59,7 +59,7 @@ if page == "Home":
 
     st.image("images/background.png", use_container_width=True)
 
-    st.title("🔌 Global Energy Dashboard")
+    st.title("🔌 Global Energy Insights: Tracing the Origins and Outcomes of the World’s Energy Dependence ")
     st.markdown("""
         Welcome to the **Global Energy Dashboard**, an interactive platform designed to visualize, analyze, and forecast worldwide energy consumption patterns.  
         This project leverages data from [Our World in Data](https://ourworldindata.org/energy).
